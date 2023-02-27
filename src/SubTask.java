@@ -1,15 +1,16 @@
 public class SubTask extends Task{
-    protected int masterId;
+    private int epicId; // исправил видимость поля на private, переименовал поле
+
     public SubTask(String name, String description) {
         super(name, description);
     }
 
-    public int getMasterId() {
-        return masterId;
+    public int getEpicId() {
+        return epicId;
     }
 
-    public void setMasterId(int masterId) {
-        this.masterId = masterId;
+    public void setEpicId(int epicId) {
+        this.epicId = epicId;
     }
 
     @Override
@@ -19,7 +20,7 @@ public class SubTask extends Task{
                 ", Название='" + getName() + '\'' +
                 ", Описание='" + getDescription() + '\'' +
                 ", Статус='" + getStatus() + '\'' +
-                ", masterId=" + masterId +
+                ", id Эпика=" + epicId +
                 '}';
     }
 }

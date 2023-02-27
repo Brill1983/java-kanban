@@ -95,8 +95,20 @@ public class Main {
                             break;
                         }
                         case "7": {
-
-                            ArrayList<SubTask> subTasksList = manager.getSubTaskListById(2);
+                            ArrayList<SubTask> subTasksList;
+                            subTasksList = manager.getSubTaskListById(2);
+                            if (subTasksList == null) {
+                                System.out.println("У эпика нет подзадач");
+                                break;
+                            }
+                            for (SubTask subTask : subTasksList) {
+                                System.out.println(subTask);
+                            }
+                            subTasksList = manager.getSubTaskListById(3);
+                            if (subTasksList == null) {
+                                System.out.println("У эпика нет подзадач");
+                                break;
+                            }
                             for (SubTask subTask : subTasksList) {
                                 System.out.println(subTask);
                             }
@@ -131,7 +143,7 @@ public class Main {
                             manager.deleteAllSubTasks();
                             break;
                         case "4": {
-                            System.out.println(manager.showSubTaskById(2));
+                            System.out.println(manager.showSubTaskById(6));
                             break;
                         }
                         case "5": {
@@ -141,8 +153,8 @@ public class Main {
                         }
                         case "6": {
                             SubTask subTask = new SubTask("Саб не из списка", "Новое описание");
-                            subTask.setId(5);
-                            subTask.setMasterId(2);
+                            subTask.setId(4);
+                            subTask.setEpicId(2);
                             subTask.setStatus("NEW");
                             manager.changeSubTask(subTask);
                             break;

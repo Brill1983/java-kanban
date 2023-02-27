@@ -2,10 +2,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Manager {
-    Counter counter = new Counter();
-    HashMap<Integer, Task> tasks = new HashMap<>();
-    HashMap<Integer, Epic> epics = new HashMap<>();
-    HashMap<Integer, SubTask> subTasks = new HashMap<>();
+    private IdGenerator idGenerator = new IdGenerator(); // модификатор доступа сделал private
+    private HashMap<Integer, Task> tasks = new HashMap<>(); // модификатор доступа сделал private
+    private HashMap<Integer, Epic> epics = new HashMap<>(); // модификатор доступа сделал private
+    private HashMap<Integer, SubTask> subTasks = new HashMap<>(); // модификатор доступа сделал private
 
     public void getAllTasks(){
        for (Integer key: tasks.keySet()) {
@@ -29,29 +29,31 @@ public class Manager {
     }
 
     public void makeTask(Task task, String status){
-        task.setId(counter.count());
+        task.setId(idGenerator.generateId());
         task.setStatus(status);
         tasks.put(task.getId(), task);
     }
 
     public void makeEpic(Epic epic) {
-        epic.setId(counter.count());
+        epic.setId(idGenerator.generateId());
         epic.setStatus(setEpicStatus(epic.getId())); // при создании методом определяем статус
+        epic.setSubTaskList(makeSubTaskList(epic.getId())); // вносим в поле Эпика список с подзадачами
         epics.put(epic.getId(), epic);
     }
 
-    public void makeSubTask(SubTask subTask, int masterId, String status){
-        subTask.setId(counter.count());
+    public void makeSubTask(SubTask subTask, int epicId, String status){
+        subTask.setId(idGenerator.generateId());
         subTask.setStatus(status);
-        subTask.setMasterId(masterId);
-        if (!epics.containsKey(masterId)) { //нельзя создать Подзадачу без Эпика, для этого есть обычные Задачи (Task)
+        subTask.setEpicId(epicId);
+        if (!epics.containsKey(epicId)) { //нельзя создать Подзадачу без Эпика, для этого есть обычные Задачи (Task)
             System.out.println("Для подзадачи нет эпика. Введите вначале эпик.");
             return;
         }
         subTasks.put(subTask.getId(), subTask);
-            Epic epic = epics.get(masterId);
-            epic.setStatus(setEpicStatus(masterId)); // при добавлении новой Подзадачи - переопределяем статус у эпика.
-            epics.put(masterId, epic);
+            Epic epic = epics.get(epicId);
+            epic.setStatus(setEpicStatus(epicId)); //при добавлении Подзадачи - переопределяем статус у Эпика
+            epic.setSubTaskList(makeSubTaskList(epicId)); //при добавлении Подзадачи - переделыв. список Подзадач Эпика
+            epics.put(epicId, epic);
     }
 
     public void deleteAllTasks() {
@@ -67,6 +69,7 @@ public class Manager {
         for (Integer key: epics.keySet()) {
             Epic epic = epics.get(key);
             epic.setStatus("NEW"); //при удалении Подзадач переопределяем статусы эпиков
+            epic.setSubTaskList(null); // в список подзадач всех Эпиков возвращаем null
             epics.put(key, epic);
         }
     }
@@ -117,11 +120,12 @@ public class Manager {
             return;
         }
         SubTask subTask = subTasks.get(id);
-        int masterId = subTask.getMasterId();
+        int epicId = subTask.getEpicId();
         subTasks.remove(id);
-            Epic epic = epics.get(masterId);
-            epic.setStatus(setEpicStatus(masterId)); // после удаления Подзадачи, переопределяем статусы Эпика
-            epics.put(masterId, epic);
+            Epic epic = epics.get(epicId);
+            epic.setStatus(setEpicStatus(epicId)); // после удаления Подзадачи, переопределяем статусы Эпика
+            epic.setSubTaskList(makeSubTaskList(epicId)); // после удаления Подзадачи, меняем список подзадач Эпика
+            epics.put(epicId, epic);
     }
 
     public void changeTask(Task task) {
@@ -131,17 +135,19 @@ public class Manager {
 
     public void changeEpic(Epic epic) {
         int id = epic.getId();
-        epic.setStatus(setEpicStatus(id)); // после изменения Эпика, переопределяем статус (возможно это лишее)
+        epic.setStatus(setEpicStatus(id)); //после изменения Эпика, переопределяем статус (возможно лишее)
+        epic.setSubTaskList(makeSubTaskList(id)); //после изменения Эпика, переопредел. список подзадач (возможно лишее)
         epics.put(id, epic);
     }
 
     public void changeSubTask(SubTask subTask) {
         int id = subTask.getId();
-        int masterId = subTask.getMasterId();
-            Epic epic = epics.get(masterId);
-            epic.setStatus(setEpicStatus(id)); // после изменения Подзадачи, переопределяем статус
-            epics.put(masterId, epic);
+        int epicId = subTask.getEpicId();
         subTasks.put(id, subTask);
+            Epic epic = epics.get(epicId);
+            epic.setStatus(setEpicStatus(epicId)); // после изменения Подзадачи, переопределяем статус Эпика
+            epic.setSubTaskList(makeSubTaskList(epicId)); // после измен. Подзадачи, переопредел. список Подзадач Эпика
+            epics.put(epicId, epic);
     }
 
     public String setEpicStatus(int id) {
@@ -150,7 +156,7 @@ public class Manager {
         int doneCount = 0;
         for (Integer key: subTasks.keySet()) {
             SubTask subTask = subTasks.get(key);
-            if (subTask.getMasterId() == id) {
+            if (subTask.getEpicId() == id) {
                 count++;
                 if (subTask.getStatus().equals("IN_PROGRESS")){
                     newCount++;
@@ -171,18 +177,23 @@ public class Manager {
         return "NEW";
     }
 
-    public ArrayList<SubTask> getSubTaskListById(int id) { //возвращаем список с Подзадачами Эпика с указанным ID
-        if (!epics.containsKey(id)) {
-            System.out.println("Эпика с таким идентификатором нет");
-            return null;
-        }
+    public ArrayList<SubTask> makeSubTaskList(int id) { //возвращаем список с Подзадачами Эпика с указанным ID
         ArrayList<SubTask> subTaskList = new ArrayList<>();
         for (Integer key: subTasks.keySet()) {
             SubTask subTask = subTasks.get(key);
-            if (subTask.getMasterId() == id) {
+            if (subTask.getEpicId() == id) {
                 subTaskList.add(subTask);
             }
         }
         return subTaskList;
+    }
+
+    public ArrayList<SubTask> getSubTaskListById(int id) { // запрашиваем геттером список Подзадач у Эпика с id
+        if (!epics.containsKey(id)) {
+            System.out.println("Эпика с таким идентификатором нет");
+            return null;
+        }
+        Epic epic = epics.get(id);
+        return epic.getSubTaskList(); // если подзадач нет - то он вернет Null
     }
 }
