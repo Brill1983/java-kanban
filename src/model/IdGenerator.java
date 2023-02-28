@@ -1,3 +1,5 @@
+package model;
+
 public class IdGenerator { // переименовал класс
     private Integer number = 0;
 

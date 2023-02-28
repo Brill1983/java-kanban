@@ -1,3 +1,5 @@
+package model;
+
 public class SubTask extends Task{
     private int epicId; // исправил видимость поля на private, переименовал поле
 

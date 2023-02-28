@@ -1,3 +1,10 @@
+package service;
+
+import model.Epic;
+import model.IdGenerator;
+import model.SubTask;
+import model.Task;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,7 +52,7 @@ public class Manager {
         subTask.setId(idGenerator.generateId());
         subTask.setStatus(status);
         subTask.setEpicId(epicId);
-        if (!epics.containsKey(epicId)) { //нельзя создать Подзадачу без Эпика, для этого есть обычные Задачи (Task)
+        if (!epics.containsKey(epicId)) { //нельзя создать Подзадачу без Эпика, для этого есть обычные Задачи (model.Task)
             System.out.println("Для подзадачи нет эпика. Введите вначале эпик.");
             return;
         }
