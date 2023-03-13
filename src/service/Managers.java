@@ -2,7 +2,7 @@ package service;
 
 public class Managers {
 
-    public TaskManager getDefault() {
+    public static TaskManager getDefault() { //сделал метод статическим
         return new InMemoryTaskManager();
     }
 

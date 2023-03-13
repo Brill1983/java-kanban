@@ -3,13 +3,14 @@ import model.Status;
 import model.SubTask;
 import model.Task;
 import service.InMemoryTaskManager;
+import service.Managers;
 import service.TaskManager;
 
 import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
-        TaskManager taskManager = new InMemoryTaskManager();
+        TaskManager taskManager = Managers.getDefault(); // получаем объект через метод класса Managers
 
         System.out.println("Create Tasks, Epics, SubTasks");
         Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW));
