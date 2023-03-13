@@ -1,28 +1,34 @@
 package model;
 
-public class SubTask extends Task{
-    private int epicId; // исправил видимость поля на private, переименовал поле
+public class SubTask extends Task {
 
-    public SubTask(String name, String description) {
-        super(name, description);
+    private Epic epic;
+
+    public SubTask(String name, String description, Status status, Epic epic) {
+        super(name, description, status);
+        this.epic = epic;
+    }
+    public SubTask(int id, String name, String description, Status status, Epic epic) {
+        super(id, name, description, status);
+        this.epic = epic;
     }
 
-    public int getEpicId() {
-        return epicId;
+    public Epic getEpic() {
+        return epic;
     }
 
-    public void setEpicId(int epicId) {
-        this.epicId = epicId;
+    public void setEpic(Epic epic) {
+        this.epic = epic;
     }
 
     @Override
     public String toString() {
-        return "Задача: {" +
+        return "SubTask{" +
                 "id=" + getId() +
-                ", Название='" + getName() + '\'' +
-                ", Описание='" + getDescription() + '\'' +
-                ", Статус='" + getStatus() + '\'' +
-                ", id Эпика=" + epicId +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status='" + getStatus() + '\'' +
+                ", epic= " + epic.getId() + ", " + epic.getStatus() +
                 '}';
     }
 }

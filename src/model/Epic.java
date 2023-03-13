@@ -1,30 +1,50 @@
 package model;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
 
 public class Epic extends Task {
-
-    private ArrayList<SubTask> subTaskList; // завел поле для списка ссылок на подзадачи
+    private List<SubTask> subTasks = new ArrayList<>();
 
     public Epic(String name, String description) {
         super(name, description);
     }
 
-    public ArrayList<SubTask> getSubTaskList() { // геттер для поля со списком
-        return subTaskList;
+    public Epic(int id, String name, String description) {
+        super(id, name, description);
     }
 
-    public void setSubTaskList(ArrayList<SubTask> subTaskList) { // сеттор поля со списком
-        this.subTaskList = subTaskList;
+    public List<SubTask> getSubTasks() {
+        return subTasks;
+    }
+
+    public void setSubTasks(List<SubTask> subTasks) {
+        this.subTasks = subTasks;
     }
 
     @Override
     public String toString() {
-        return "Задача: {" +
+        return "Epic{" +
                 "id=" + getId() +
-                ", Название='" + getName() + '\'' +
-                ", Описание='" + getDescription() + '\'' +
-                ", Статус='" + getStatus() + '\'' +
+                ", name='" + getName() + '\'' +
+                ", description='" + getDescription() + '\'' +
+                ", status='" + getStatus() + '\'' +
+                ", subTasks=" + subTasks.size() +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj) return true;
+        if (obj == null || getClass() != obj.getClass()) return false;
+        Epic epic = (Epic) obj;
+        return (getId() == epic.getId()) &&
+                Objects.equals(getName(), epic.getName()) &&
+                Objects.equals(getDescription(), epic.getDescription());
+    }
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(),getDescription());
     }
 }
