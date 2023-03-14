@@ -10,6 +10,7 @@ import java.util.List;
 
 public class Main {
     public static void main(String[] args) {
+
         TaskManager taskManager = Managers.getDefault(); // получаем объект через метод класса Managers
 
         System.out.println("Create Tasks, Epics, SubTasks");
@@ -110,5 +111,7 @@ public class Main {
             System.out.println(task);
         }
 //        System.out.println(taskManager.getHistory());
+
+
     }
 }
