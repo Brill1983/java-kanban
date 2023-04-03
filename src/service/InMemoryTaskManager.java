@@ -132,7 +132,7 @@ public class InMemoryTaskManager implements TaskManager {
         Epic saved = epics.get(epic.getId()); // статус и список останутся прежними
         saved.setName(epic.getName());
         saved.setDescription(epic.getDescription());
-        epics.put(saved.getId(), saved);
+        epics.put(saved.getId(), saved); // без этого можно обойтись
     }
 
     @Override
@@ -255,4 +255,6 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return subTaskList;
     }
+
+    // добвил метод - потом переопределить
 }
