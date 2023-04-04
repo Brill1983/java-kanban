@@ -13,12 +13,14 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, SubTask> subTasks;
     private HistoryManager historyManager;
     int seq = 0;
+
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.tasks = new HashMap<>();
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.historyManager = historyManager;
     }
+
     private int generateId() { //генератор id
         return ++seq;
     }
@@ -27,7 +29,6 @@ public class InMemoryTaskManager implements TaskManager {
     public List<Task> getHistory() {
         return historyManager.getHistory();
     }
-
 
     @Override
     public List<Task> getAllTasks() { //получить список Тасков
@@ -110,7 +111,6 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task) { //обновление Таска
-//        tasks.put(task.getId(), task);
         Task saved = tasks.get(task.getId());
         saved.setName(task.getName());
         saved.setStatus(task.getStatus());
@@ -179,7 +179,7 @@ public class InMemoryTaskManager implements TaskManager {
             subTasks.remove(subTaskIdForDelete);
             historyManager.remove(subTaskIdForDelete);
         }
-        epics.remove(id); //удалчем Эпик
+        epics.remove(id); //удаляем Эпик
         historyManager.remove(id);
     }
 
@@ -275,6 +275,4 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return subTaskList;
     }
-
-    // добвил метод - потом переопределить
 }

@@ -8,14 +8,15 @@ import service.TaskManager;
 import java.util.List;
 
 public class Main {
+
     public static void main(String[] args) {
 
         TaskManager taskManager = Managers.getDefault(); // получаем объект через метод класса Managers
 
         System.out.println("Create Tasks, Epics, SubTasks");
-        Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW));
-        Task task2 = taskManager.createTask(new Task("Task #2", "DT", Status.NEW));
-        Task task3 = taskManager.createTask(new Task("Task #3", "DT", Status.NEW));
+        Task task1 = taskManager.createTask(new Task("Task #1", "DT"));
+        Task task2 = taskManager.createTask(new Task("Task #2", "DT"));
+        Task task3 = taskManager.createTask(new Task("Task #3", "DT"));
         Epic epic4 = taskManager.createEpic(new Epic("Epic #4", "DE"));
         Epic epic5 = taskManager.createEpic(new Epic("Epic #5", "DE"));
         Epic epic6 = taskManager.createEpic(new Epic("Epic #6", "DE"));
