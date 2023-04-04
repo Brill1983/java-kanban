@@ -6,22 +6,18 @@ public class Task {
     private int id;
     private String name;
     private String description;
-    private Status status;
+    private Status status = Status.NEW;
 
     //несколько вариантов конструктора, для разных вариантов создания объекта Task и наследников Epic и SubTask
     //в дальнейшем, при уточнении состава вводимых данных можно сократить количество конструкторов
-    public Task(int id, String name, String description, Status status) {
+    public Task(int id, String name, String description, Status status) { // конструктор с параметром id используется для изменения задачи.
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
     }
-
-    public Task(String name, String description, Status status) {
-        this.name = name;
-        this.description = description;
-        this.status = status;
-    }
+// тут был конструктор без id но со "статусом" - он использоался для создания новой задачи.
+// после удаления их него принимаемого параметра "статус" он стал не нужен, т.к. такой уже есть
 
     public Task(String name, String description) {
         this.name = name;
@@ -85,6 +81,7 @@ public class Task {
                 Objects.equals(getName(), task.getName()) &&
                 Objects.equals(getDescription(), task.getDescription());
     }
+
     @Override
     public int hashCode() {
         return Objects.hash(getName(),getDescription());
