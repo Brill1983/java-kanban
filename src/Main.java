@@ -2,8 +2,6 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import service.InMemoryHistoryManager;
-import service.InMemoryTaskManager;
 import service.Managers;
 import service.TaskManager;
 
@@ -25,11 +23,6 @@ public class Main {
         SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.DONE, epic6));
         SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.DONE, epic6));
         SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.IN_PROGRESS, epic6));
-// Алтернативный вариант создания СабТаски
-//        SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", Status.NEW, taskManager.getEpicById(5)));
-//        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.DONE, taskManager.getEpicById(6)));
-//        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.DONE, taskManager.getEpicById(6)));
-//        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.IN_PROGRESS, taskManager.getEpicById(6)));
 
 // Перенося блоки команд в комментарий, можно менять варианты тестирования
         System.out.println("Update task");
@@ -39,19 +32,19 @@ public class Main {
         System.out.println();
         System.out.println(taskManager.getTaskById(3));
         System.out.println();
-//        System.out.println("Update epic");
-//        Epic correctedEpic = new Epic(5, "NEW Epic", "NEW DE");
-//        System.out.println(taskManager.getEpicById(5));
-//        taskManager.updateEpic(correctedEpic);
+        System.out.println("Update epic");
+        Epic correctedEpic = new Epic(5, "NEW Epic", "NEW DE");
+        System.out.println(taskManager.getEpicById(5));
+        taskManager.updateEpic(correctedEpic);
         System.out.println();
         System.out.println(taskManager.getEpicById(5));
         System.out.println();
-//        System.out.println("Update subTask");
-//        System.out.println(taskManager.getSubTaskById(10));
-//        System.out.println(taskManager.getEpicById(5));
-//        System.out.println(taskManager.getEpicById(6));
+        System.out.println("Update subTask");
+        System.out.println(taskManager.getSubTaskById(10));
+        System.out.println(taskManager.getEpicById(5));
+        System.out.println(taskManager.getEpicById(6));
         System.out.println();
-//        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", Status.IN_PROGRESS, taskManager.getEpicById(5)));
+        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", Status.IN_PROGRESS, taskManager.getEpicById(5)));
         System.out.println(taskManager.getSubTaskById(10));
         System.out.println(taskManager.getEpicById(5));
         System.out.println(taskManager.getEpicById(6));
@@ -106,17 +99,19 @@ public class Main {
         System.out.println("Get SubTasks list from Epic by id");
         System.out.println(taskManager.getSubTaskList(epic5));
         System.out.println(taskManager.getSubTaskList(epic6));
-*/        System.out.println("Get history:");
+*/
+        System.out.println("Get history:");
         List<Task> history = taskManager.getHistory();
         for (Task task : history) {
             System.out.println(task);
         }
+        taskManager.deleteEpicById(6);
         System.out.println();
-        for (Task task : history) {
+        System.out.println("Get history:");
+
+        List<Task> history1 = taskManager.getHistory();
+        for (Task task : history1) {
             System.out.println(task);
         }
-//        System.out.println(taskManager.getHistory());
-
-
     }
 }
