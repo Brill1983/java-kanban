@@ -1,6 +1,7 @@
 package service;
 
 import model.Epic;
+import model.Status;
 import model.SubTask;
 import model.Task;
 
@@ -26,11 +27,11 @@ public interface TaskManager {
 
     SubTask getSubTaskById(int id); //получение СабТаска по индентификатору
 
-    void updateTask(Task task); //обновление Таска
+    void updateTask(Task task, Status status); //обновление Таска
 
     void updateEpic(Epic epic); //обновление Эпика
 
-    void updateSubTask(SubTask subTask); //обновление СабТаски
+    void updateSubTask(SubTask subTask, Status status); //обновление СабТаски
 
     void deleteTaskById(int id); //удаление Таски по идентификатору
 

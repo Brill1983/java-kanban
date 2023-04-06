@@ -12,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     private HashMap<Integer, Epic> epics;
     private HashMap<Integer, SubTask> subTasks;
     private HistoryManager historyManager;
-    int seq = 0;
+    private int seq = 0;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.tasks = new HashMap<>();
@@ -46,7 +46,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Task createTask(Task task) { //моздание Таска
+    public Task createTask(Task task) { //создание Таска
         task.setId(generateId());
         tasks.put(task.getId(), task);
         return task;
@@ -110,10 +110,10 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateTask(Task task) { //обновление Таска
+    public void updateTask(Task task, Status status) { //обновление Таска
         Task saved = tasks.get(task.getId());
         saved.setName(task.getName());
-        saved.setStatus(task.getStatus());
+        saved.setStatus(status);
         saved.setDescription(task.getDescription());
     }
 
@@ -136,11 +136,11 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public void updateSubTask(SubTask subTask) { //обновление СабТаски
+    public void updateSubTask(SubTask subTask, Status status) { //обновление СабТаски
         SubTask saved = subTasks.get(subTask.getId()); // из хранилиза СабТасков вынули равную по ID с входящей
         saved.setName(subTask.getName());
         saved.setDescription(subTask.getDescription());
-        saved.setStatus(subTask.getStatus());
+        saved.setStatus(status);
         Epic previousEpic = saved.getEpic(); // отдельно сохранили Эпик выгруженной из хранилища СабТаски
         Epic epic = subTask.getEpic(); // получили эпик из входящей СабТаски
         Epic savedEpic = epics.get(epic.getId()); // проверяем что такой эпик есть в хранилище Эпиков

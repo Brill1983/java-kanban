@@ -3,12 +3,13 @@ package model;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class CustomLinkedList {
 
     private Node head;
     private Node tail;
-    private HashMap<Integer, Node> history = new HashMap<>();
+    private Map<Integer, Node> history = new HashMap<>();
 
     public void linkLast(Task task) {
         Node oldTail = tail;
@@ -51,7 +52,7 @@ public class CustomLinkedList {
         node.setTask(null);
     }
 
-    public HashMap<Integer, Node> getHistory() {
+    public Map<Integer, Node> getHistory() {
         return history;
     }
 }

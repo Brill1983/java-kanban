@@ -9,17 +9,6 @@ public class Task {
     private String description;
     private Status status = Status.NEW;
 
-    //несколько вариантов конструктора, для разных вариантов создания объекта Task и наследников Epic и SubTask
-    //в дальнейшем, при уточнении состава вводимых данных можно сократить количество конструкторов
-    public Task(int id, String name, String description, Status status) { // конструктор с параметром id используется для изменения задачи.
-        this.id = id;
-        this.name = name;
-        this.description = description;
-        this.status = status;
-    }
-// тут был конструктор без id но со "статусом" - он использоался для создания новой задачи.
-// после удаления их него принимаемого параметра "статус" он стал не нужен, т.к. такой уже есть
-
     public Task(String name, String description) {
         this.name = name;
         this.description = description;

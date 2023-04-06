@@ -20,16 +20,16 @@ public class Main {
         Epic epic4 = taskManager.createEpic(new Epic("Epic #4", "DE"));
         Epic epic5 = taskManager.createEpic(new Epic("Epic #5", "DE"));
         Epic epic6 = taskManager.createEpic(new Epic("Epic #6", "DE"));
-        SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", Status.NEW, epic5));
-        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.DONE, epic6));
-        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.DONE, epic6));
-        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.IN_PROGRESS, epic6));
+        SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", epic5));
+        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", epic6));
+        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", epic6));
+        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", epic6));
 
 // Перенося блоки команд в комментарий, можно менять варианты тестирования
         System.out.println("Update task");
-        Task correctedTask = new Task(3, "Task #3.1", "new DT", Status.IN_PROGRESS);
+        Task correctedTask = new Task(3, "Task #3.1", "new DT");
         System.out.println(taskManager.getTaskById(3));
-        taskManager.updateTask(correctedTask);
+        taskManager.updateTask(correctedTask, Status.IN_PROGRESS);
         System.out.println();
         System.out.println(taskManager.getTaskById(3));
         System.out.println();
@@ -45,7 +45,7 @@ public class Main {
         System.out.println(taskManager.getEpicById(5));
         System.out.println(taskManager.getEpicById(6));
         System.out.println();
-        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", Status.IN_PROGRESS, taskManager.getEpicById(5)));
+        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", taskManager.getEpicById(5)), Status.IN_PROGRESS);
         System.out.println(taskManager.getSubTaskById(10));
         System.out.println(taskManager.getEpicById(5));
         System.out.println(taskManager.getEpicById(6));
