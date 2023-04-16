@@ -14,4 +14,8 @@ public enum Status {
     String getName() {
         return nameStatus;
     }
+
+    public void setNameStatus(String nameStatus) {
+        this.nameStatus = nameStatus;
+    }
 }

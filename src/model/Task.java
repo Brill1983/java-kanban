@@ -7,11 +7,12 @@ public class Task {
     private int id;
     private String name;
     private String description;
-    private Status status = Status.NEW;
+    private Status status;
 
     public Task(String name, String description) {
         this.name = name;
         this.description = description;
+        this.status = Status.NEW;
     }
 
     public Task(int id, String name, String description) {
@@ -54,12 +55,13 @@ public class Task {
 
     @Override
     public String toString() {
-        return "Task{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", status='" + status.getName() + '\'' +
-                '}';
+//        return "Task{" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", description='" + description + '\'' +
+//                ", status='" + status.getName() + '\'' +
+//                '}';
+        return new String(id + ",TASK," + name + "," + status + "," + description + ",");
     }
 
     @Override

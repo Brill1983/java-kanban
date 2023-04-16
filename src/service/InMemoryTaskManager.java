@@ -8,10 +8,10 @@ import java.util.List;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private HashMap<Integer, Task> tasks;
-    private HashMap<Integer, Epic> epics;
-    private HashMap<Integer, SubTask> subTasks;
-    private HistoryManager historyManager;
+    protected HashMap<Integer, Task> tasks;
+    protected HashMap<Integer, Epic> epics;
+    protected HashMap<Integer, SubTask> subTasks;
+    protected HistoryManager historyManager;
     private int seq = 0;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -55,7 +55,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic createEpic(Epic epic) { //создание Эпика
         epic.setId(generateId());
-        epic.setStatus(Status.NEW);
+ //       epic.setStatus(Status.NEW);
         epics.put(epic.getId(), epic);
         return epic;
     }

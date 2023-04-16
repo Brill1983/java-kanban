@@ -24,12 +24,13 @@ public class SubTask extends Task {
 
     @Override
     public String toString() {
-        return "SubTask{" +
-                "id=" + getId() +
-                ", name='" + getName() + '\'' +
-                ", description='" + getDescription() + '\'' +
-                ", status='" + getStatus().getName() + '\'' +
-                ", epic= '" + epic.getId() + ", " + epic.getStatus().getName() + '\'' +
-                '}';
+//        return "SubTask{" +
+//                "id=" + getId() +
+//                ", name='" + getName() + '\'' +
+//                ", description='" + getDescription() + '\'' +
+//                ", status='" + getStatus().getName() + '\'' +
+//                ", epic= '" + epic.getId() + ", " + epic.getStatus().getName() + '\'' +
+//                '}';
+        return new String(getId() + ",SUBTASK," + getName() + "," + getStatus() + "," + getDescription() + "," + getEpic().getId());
     }
 }
