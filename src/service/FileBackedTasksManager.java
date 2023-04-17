@@ -9,6 +9,7 @@ import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager{
@@ -21,8 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public void save() { // D:\test.csv
-        try {
-            FileWriter fileRecord = new FileWriter(path.toString());
+        try (FileWriter fileRecord = new FileWriter(path.toString())){
             fileRecord.write("id,type,name,status,description,epic\n");
             for(Integer key: tasks.keySet()) {
                 fileRecord.write(tasks.get(key).toString() + "\n");
@@ -37,18 +37,79 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             if(!historyManager.getHistory().isEmpty()) {
                 fileRecord.write(historyToString(historyManager));
             }
-            fileRecord.close();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private void loadFromFile(File file) {
+    static FileBackedTasksManager loadFromFile(File file) {
+
+        try {
+            Path path1 = Paths.get(file.toString());
+            FileBackedTasksManager fileManager = new FileBackedTasksManager(Managers.getDefaultHistory(), path1);
+            String fileToString = Files.readString(path1);
+            String[] lines = fileToString.split("\n");
+            for (int i = 1; i < lines.length; i ++) {
+                if (!lines[i].isEmpty() && (i != lines.length - 1)) {
+                    Task task = fileManager.fromString(lines[i]);
+                    if (String.valueOf(task.getClass()).contains("Task")) {
+                        fileManager.createTask(task);
+                    } else if (String.valueOf(task.getClass()).contains("Epic")) {
+                        fileManager.createEpic((Epic) task);
+                    } else {
+                        fileManager.createSubTask((SubTask) task);
+                    }
+                }
+                if (i == lines.length - 1) {// прошли все задачи - записали в мапы,
+                    List<Integer> list = FileBackedTasksManager.historyFromString(lines[i]);
+                    for (Integer key : list) {
+                        if (fileManager.tasks.containsKey(key)) {
+                            fileManager.historyManager.add(fileManager.tasks.get(key));
+                        } else if (fileManager.epics.containsKey(key)) {
+                            fileManager.historyManager.add(fileManager.epics.get(key));
+                        } else {
+                            fileManager.historyManager.add(fileManager.subTasks.get(key));
+                        }
+                    }
+                }    // теперь надо считать историю вызова
+            }
+            return fileManager;
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    static List<Integer> historyFromString(String value) {
+        String[] split = value.split(",");
+        List<Integer> list = new ArrayList<>();
+        for(int i = 0; i < split.length; i++) {
+            list.add(Integer.parseInt(split[i]));
+        }
+        return list;
+    }
+
+    static String historyToString(HistoryManager historyManager) {
+        List<Task> list = historyManager.getHistory();
+        String record = "";
+        int counter = 0;
+        for (Task task: list) {
+            if(counter < list.size() - 1) {
+                record = record + task.getId() + ",";
+            } else {
+                record = record + task.getId();
+            }
+            counter ++;
+        }
+        return record;
+    }
+/*    public void loadFromFile(File file) {
         try {
             String fileToString = Files.readString(Path.of(file.toString()));
             String[] lines = fileToString.split("\n");
             for (int i = 1; i < lines.length; i ++) {
-                if(!lines[i].isEmpty()) {
+                if (!lines[i].isEmpty() && (i != lines.length - 1)) {
                     Task task = fromString(lines[i]);
                     if (String.valueOf(task.getClass()).contains("Task")) {
                         createTask(task);
@@ -58,8 +119,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                         createSubTask((SubTask) task);
                     }
                 }
-               // прошли все задачи - записали в мапы,
-               // теперь надо считать историю вызова
+                if (i == lines.length - 1) {// прошли все задачи - записали в мапы,
+                    List<Integer> list = FileBackedTasksManager.historyFromString(lines[i]);
+                    for (Integer key : list) {
+                        if (tasks.containsKey(key)) {
+                            historyManager.add(tasks.get(key));
+                        } else if (epics.containsKey(key)) {
+                            historyManager.add(epics.get(key));
+                        } else {
+                            historyManager.add(subTasks.get(key));
+                        }
+                    }
+                }    // теперь надо считать историю вызова
             }
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -68,6 +139,31 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         }
     }
 
+    static List<Integer> historyFromString(String value) {
+        String[] split = value.split(",");
+        List<Integer> list = new ArrayList<>();
+        for(int i = 0; i < split.length; i++) {
+            list.add(Integer.parseInt(split[i]));
+        }
+        return list;
+    }
+
+    private String historyToString(HistoryManager historyManager) {
+        List<Task> list = historyManager.getHistory();
+        String record = "";
+        int counter = 0;
+        for (Task task: list) {
+            if(counter < list.size() - 1) {
+                record = record + task.getId() + ",";
+            } else {
+                record = record + task.getId();
+            }
+            counter ++;
+        }
+        return record;
+    }
+
+ */
     private Task fromString(String value) { // нужно подать не пустое значение и не
         String[] split = value.split(",");
         int id = Integer.parseInt(split[0]);
@@ -88,20 +184,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return task;
     }
 
-    private String historyToString(HistoryManager historyManager) {
-        List<Task> list = historyManager.getHistory();
-        String record = "";
-        int counter = 0;
-        for (Task task: list) {
-            if(counter < list.size() - 1) {
-                record = record + task.getId() + ",";
-            } else {
-                record = record + task.getId();
-            }
-            counter ++;
-        }
-        return record;
-    }
 
     @Override
     public Task createTask(Task task) {
@@ -179,9 +261,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     public static void main(String[] args) {
-    //    input();
-        FileBackedTasksManager fileBackedTasksManager = new FileBackedTasksManager(Managers.getDefaultHistory(), Paths.get("D:\\test.csv"));
-        fileBackedTasksManager.loadFromFile(new File("D:\\test.csv"));
+        input();
+//        FileBackedTasksManager fileBackedTasksManager = loadFromFile(new File("D:\\test.csv"));
+
+//        System.out.println(fileBackedTasksManager.getAllTasks());
+//        System.out.println(fileBackedTasksManager.getAllEpics());
+//        System.out.println(fileBackedTasksManager.getAllSubTasks());
+//        System.out.println("Get history:");
+//
+//        List<Task> history1 = fileBackedTasksManager.getHistory();
+//        for (Task task : history1) {
+//            System.out.println(task);
+//        }
     }
 
     public static void input() {
