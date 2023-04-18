@@ -30,7 +30,6 @@ public class InMemoryHistoryManager implements HistoryManager {
     @Override
     public void remove(int id) { // удаляет из HashMap
         if (!historyList.getHistory().containsKey(id)) {
-            System.out.println("No such ID in history");
             return;
         }
         Node node = historyList.getHistory().remove(id);

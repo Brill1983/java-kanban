@@ -12,7 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Epic> epics;
     protected HashMap<Integer, SubTask> subTasks;
     protected HistoryManager historyManager;
-    private int seq = 0;
+    protected int seq = 0;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
         this.tasks = new HashMap<>();
@@ -55,21 +55,20 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public Epic createEpic(Epic epic) { //создание Эпика
         epic.setId(generateId());
- //       epic.setStatus(Status.NEW);
         epics.put(epic.getId(), epic);
         return epic;
     }
 
     @Override
     public SubTask createSubTask(SubTask subTask) { //создание СабТаска
-        Epic saved = subTask.getEpic();
-        if (!epics.containsValue(saved)) { //проверка на наличие эпиков к которым относятся саб таски
+        int saved = subTask.getEpic();
+        if (!epics.containsKey(saved)) { //проверка на наличие эпиков к которым относятся саб таски
             System.out.println("No such epic in Hash Map");
             return null;
         }
         subTask.setId(generateId());
         subTasks.put(subTask.getId(), subTask);
-        Epic epic = epics.get(saved.getId()); // вынимаем из мапы эпик, по id эпика, который пришел с сабтаской
+        Epic epic = epics.get(saved); // вынимаем из мапы эпик, по id эпика, который пришел с сабтаской
         epic.setStatus(calculateStatus(saved)); // расчитываем статус
 
         List<SubTask> subTaskList = epic.getSubTasks(); // вынимаем из эпика список сабтасков
@@ -137,26 +136,44 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateSubTask(SubTask subTask, Status status) { //обновление СабТаски
+        if (!subTasks.containsKey(subTask.getId())) {
+            System.out.println("The subtask has incorrect number");
+            return;
+        }
         SubTask saved = subTasks.get(subTask.getId()); // из хранилиза СабТасков вынули равную по ID с входящей
         saved.setName(subTask.getName());
         saved.setDescription(subTask.getDescription());
         saved.setStatus(status);
-        Epic previousEpic = saved.getEpic(); // отдельно сохранили Эпик выгруженной из хранилища СабТаски
-        Epic epic = subTask.getEpic(); // получили эпик из входящей СабТаски
-        Epic savedEpic = epics.get(epic.getId()); // проверяем что такой эпик есть в хранилище Эпиков
-        if (savedEpic == null) {
+        int oldEpicId = saved.getEpic();
+        int newEpicId = subTask.getEpic();
+        if (!epics.containsKey(newEpicId)) {
             System.out.println("The epic for subtask has incorrect number");
             return;
         }
-        saved.setEpic(epic); // присвоили Эпик из входящей СабТаски в выгруженную СабТаску из хранилища
-        subTasks.put(subTask.getId(), saved);// записали выгруженную СабаТаску с измененными полями обартно в хранилище под тем же ID
-        // теперь надо у Эпика пришедшего с задачей и у эпика старой СабТаски пересчитать статус и перезаписать список
-        savedEpic.setStatus(calculateStatus(savedEpic));
-        savedEpic.setSubTasks(createList(savedEpic));
-        epics.put(epic.getId(), savedEpic);
-        previousEpic.setStatus(calculateStatus(previousEpic));
-        previousEpic.setSubTasks(createList(previousEpic));
-        epics.put(previousEpic.getId(), previousEpic);
+        Epic oldEpic = epics.get(oldEpicId); // эпик по старой СабТаске
+        Epic newEpic = epics.get(newEpicId); // эпик по входящей сабтаске
+        saved.setEpic(subTask.getEpic());
+        oldEpic.setStatus(calculateStatus(oldEpicId));
+        newEpic.setStatus(calculateStatus(newEpicId));
+        oldEpic.setSubTasks(createList(oldEpic));
+        newEpic.setSubTasks(createList(newEpic));
+
+//        Epic previousEpic = epics.get(oldEpicId); // отдельно сохранили Эпик выгруженной из хранилища СабТаски
+//        Epic epic = epics.get(newEpicId); // получили эпик из входящей СабТаски
+//        Epic savedEpic = epics.get(epic.getId()); // проверяем что такой эпик есть в хранилище Эпиков
+//        if (savedEpic == null) {
+//            System.out.println("The epic for subtask has incorrect number");
+//            return;
+//        }
+//        saved.setEpic(epic); // присвоили Эпик из входящей СабТаски в выгруженную СабТаску из хранилища
+//        subTasks.put(subTask.getId(), saved);// записали выгруженную СабаТаску с измененными полями обартно в хранилище под тем же ID
+//         теперь надо у Эпика пришедшего с задачей и у эпика старой СабТаски пересчитать статус и перезаписать список
+//        savedEpic.setStatus(calculateStatus(savedEpic));
+//        savedEpic.setSubTasks(createList(savedEpic));
+//        epics.put(epic.getId(), savedEpic);
+//        previousEpic.setStatus(calculateStatus(previousEpic));
+//        previousEpic.setSubTasks(createList(previousEpic));
+//        epics.put(previousEpic.getId(), previousEpic);
 
     }
 
@@ -168,10 +185,14 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteEpicById(int id) { //удаление Эпика по идентификатору
+        if(!epics.containsKey(id)) {
+            System.out.println("No such id in epic map");
+            return;
+        }
         Epic saved = epics.get(id); //выгружаем Эпик из хранилища в переменную
         ArrayList<Integer> index = new ArrayList<>(); //создаем список ключей СабТасков из Мапы, в которых есть удаляемый Эпик
         for (Integer key : subTasks.keySet()) {
-            if (subTasks.get(key).getEpic().equals(saved)) {
+            if (subTasks.get(key).getEpic() == (saved.getId())) {
                 index.add(key); //собираем список ключей
             }
         }
@@ -189,11 +210,12 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("No such id in subTasks storage");
             return;
         }
-        Epic savedEpic = subTasks.get(id).getEpic(); //выгружаем Эпик у удаляемой СабТаски
+        int savedEpicId = subTasks.get(id).getEpic(); //выгружаем Эпик у удаляемой СабТаски
+        Epic savedEpic = epics.get(savedEpicId);
         subTasks.remove(id);
-        savedEpic.setStatus(calculateStatus(savedEpic)); //пересчитываем статус Эпика
+        savedEpic.setStatus(calculateStatus(savedEpicId)); //пересчитываем статус Эпика
         savedEpic.setSubTasks(createList(savedEpic)); //пересчитываем список сабстасков Эпика
-        epics.put(savedEpic.getId(), savedEpic);
+        epics.put(savedEpicId, savedEpic);
         historyManager.remove(id);
     }
 
@@ -237,15 +259,15 @@ public class InMemoryTaskManager implements TaskManager {
         }
         return epics.get(epic.getId()).getSubTasks();
     }
-    // Далее перечислены вспомогательные методы
-    public Status calculateStatus (Epic epic) { //метод расчета статуса Эпика, расчитывается при создании, удалении, изменении СабТасков
+
+    public Status calculateStatus (int id) { //метод расчета статуса Эпика, расчитывается при создании, удалении, изменении СабТасков
         int count = 0;
         int inProgressCount = 0;
         int doneCount = 0;
         for (Integer key: subTasks.keySet()) {
             SubTask subTask = subTasks.get(key);
-            Epic saved = subTask.getEpic();
-            if (saved.getId() == epic.getId()) { // айди эпиков совпали
+            int saved = subTask.getEpic();
+            if (saved == id) { // айди эпиков совпали
                 count ++;
                 if (subTask.getStatus().equals(Status.IN_PROGRESS)) {
                     inProgressCount ++;
@@ -269,7 +291,7 @@ public class InMemoryTaskManager implements TaskManager {
     public List<SubTask> createList(Epic epic) { //пересобираем список СабТасков для Эпика, в случае удаления или изменения СабТаска
         List<SubTask> subTaskList = new ArrayList<>();
         for (Integer key : subTasks.keySet()) {
-            if (subTasks.get(key).getEpic().equals(epic)) {
+            if (subTasks.get(key).getEpic() == (epic.getId())) {
                 subTaskList.add(subTasks.get(key));
             }
         }

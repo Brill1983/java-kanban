@@ -23,6 +23,10 @@ public class Epic extends Task {
         this.subTasks = subTasks;
     }
 
+    public TaskType getType() {
+        return TaskType.EPIC;
+    }
+
     @Override
     public String toString() {
 //        return "Epic{" +

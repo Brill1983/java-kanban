@@ -53,14 +53,12 @@ public class Task {
         this.description = description;
     }
 
+    public TaskType getType() {
+        return TaskType.TASK;
+    }
+
     @Override
     public String toString() {
-//        return "Task{" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", description='" + description + '\'' +
-//                ", status='" + status.getName() + '\'' +
-//                '}';
         return new String(id + ",TASK," + name + "," + status + "," + description + ",");
     }
 
