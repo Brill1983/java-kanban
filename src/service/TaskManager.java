@@ -9,43 +9,43 @@ import java.util.List;
 
 public interface TaskManager {
 
-    List<Task> getAllTasks(); //получить список Тасков
+    List<Task> getAllTasks();
 
-    List<Epic> getAllEpics(); //получить список Эпиков
+    List<Epic> getAllEpics();
 
-    List<SubTask> getAllSubTasks(); //получить список Сабтасков
+    List<SubTask> getAllSubTasks();
 
-    Task createTask(Task task); //создание Таска
+    Task createTask(Task task);
 
-    Epic createEpic(Epic epic); //создание Эпика
+    Epic createEpic(Epic epic);
 
-    SubTask createSubTask(SubTask subTask);  //создание СабТаска
+    SubTask createSubTask(SubTask subTask);
 
-    Task getTaskById(int id); //получение Таска по индентификатору
+    Task getTaskById(int id);
 
-    Epic getEpicById(int id); //получение Эпика по индентификатору
+    Epic getEpicById(int id);
 
-    SubTask getSubTaskById(int id); //получение СабТаска по индентификатору
+    SubTask getSubTaskById(int id);
 
-    void updateTask(Task task, Status status); //обновление Таска
+    void updateTask(Task task, Status status);
 
-    void updateEpic(Epic epic); //обновление Эпика
+    void updateEpic(Epic epic);
 
-    void updateSubTask(SubTask subTask, Status status); //обновление СабТаски
+    void updateSubTask(SubTask subTask, Status status);
 
-    void deleteTaskById(int id); //удаление Таски по идентификатору
+    void deleteTaskById(int id);
 
-    void deleteEpicById(int id); //удаление Эпика по идентификатору
+    void deleteEpicById(int id);
 
-    void deleteSubTaskById(int id); //удаление СабТаски по идентификатору
+    void deleteSubTaskById(int id);
 
-    void deleteAllTasks(); //удаление всех Тасков
+    void deleteAllTasks();
 
-    void deleteAllEpics(); //удаление всех Эпиков
+    void deleteAllEpics();
 
-    void deleteAllSubTasks(); //удаление всех СабТасков
+    void deleteAllSubTasks();
 
-    List<SubTask> getSubTaskList(Epic epic); //получение списка СабТасков принимаемого Эпика
+    List<SubTask> getSubTaskList(Epic epic);
 
-    List<Task> getHistory(); //нужен ли этот метод здесь, ели он уже присутствует в интерфейсе HistoryManagers?
+    List<Task> getHistory();
 }
