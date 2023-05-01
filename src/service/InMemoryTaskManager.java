@@ -2,6 +2,8 @@ package service;
 
 import model.*;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -74,6 +76,7 @@ public class InMemoryTaskManager implements TaskManager {
         List<SubTask> subTaskList = epic.getSubTasks(); // вынимаем из эпика список сабтасков
         subTaskList.add(subTask); // добавляем в список эпика сабтаску
         epic.setSubTasks(subTaskList); // сохраняем обновленный список сабтасков в эпик
+        createEpicDateTime(subTask, epic);
         epics.put(epic.getId(), epic); //записываем эпик в мапу на прежнее место
         return subTask;
     }
@@ -114,6 +117,8 @@ public class InMemoryTaskManager implements TaskManager {
         saved.setName(task.getName());
         saved.setStatus(status);
         saved.setDescription(task.getDescription());
+        saved.setStartTime(task.getStartTime());
+        saved.setDuration(task.getDuration());
     }
 
     @Override
@@ -144,19 +149,28 @@ public class InMemoryTaskManager implements TaskManager {
         saved.setName(subTask.getName());
         saved.setDescription(subTask.getDescription());
         saved.setStatus(status);
+        saved.setStartTime(subTask.getStartTime());
+        saved.setDuration(subTask.getDuration());
         int oldEpicId = saved.getEpic();
         int newEpicId = subTask.getEpic();
         if (!epics.containsKey(newEpicId)) {
             System.out.println("The epic for subtask has incorrect number");
             return;
         }
-        Epic oldEpic = epics.get(oldEpicId); // эпик по старой СабТаске
-        Epic newEpic = epics.get(newEpicId); // эпик по входящей сабтаске
-        saved.setEpic(subTask.getEpic());
-        oldEpic.setStatus(calculateStatus(oldEpicId));
-        newEpic.setStatus(calculateStatus(newEpicId));
-        oldEpic.setSubTasks(createList(oldEpic));
-        newEpic.setSubTasks(createList(newEpic));
+        if (oldEpicId != newEpicId) {
+            Epic oldEpic = epics.get(oldEpicId); // эпик по старой СабТаске
+            Epic newEpic = epics.get(newEpicId); // эпик по входящей сабтаске
+            saved.setEpic(subTask.getEpic());
+            oldEpic.setStatus(calculateStatus(oldEpicId));
+            newEpic.setStatus(calculateStatus(newEpicId));
+            oldEpic.setSubTasks(createList(oldEpic));
+            newEpic.setSubTasks(createList(newEpic));
+        } else {
+            Epic newEpic = epics.get(newEpicId); // эпик по входящей сабтаске
+            saved.setEpic(subTask.getEpic());
+            newEpic.setStatus(calculateStatus(newEpicId));
+            newEpic.setSubTasks(createList(newEpic));
+        }
 
 //        Epic previousEpic = epics.get(oldEpicId); // отдельно сохранили Эпик выгруженной из хранилища СабТаски
 //        Epic epic = epics.get(newEpicId); // получили эпик из входящей СабТаски
@@ -244,7 +258,10 @@ public class InMemoryTaskManager implements TaskManager {
         subTasks.clear();
         for (Integer key : epics.keySet()) {
             epics.get(key).setStatus(Status.NEW);
-            epics.get(key).setSubTasks(null);
+            epics.get(key).getSubTasks().clear();
+            epics.get(key).setStartTime(null);
+            epics.get(key).setEndTime(null);
+            epics.get(key).setDuration(null);
         }
         for(Task task: historyManager.getHistory()){
             historyManager.remove(task.getId());
@@ -289,12 +306,35 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     public List<SubTask> createList(Epic epic) { //пересобираем список СабТасков для Эпика, в случае удаления или изменения СабТаска
+        epic.setDuration(null);
+        epic.setStartTime(null);
+        epic.setEndTime(null);
         List<SubTask> subTaskList = new ArrayList<>();
         for (Integer key : subTasks.keySet()) {
             if (subTasks.get(key).getEpic() == (epic.getId())) {
                 subTaskList.add(subTasks.get(key));
+                createEpicDateTime(subTasks.get(key), epic);
             }
         }
         return subTaskList;
+    }
+
+    public void createEpicDateTime(SubTask subTask, Epic epic) {
+        LocalDateTime subTaskStartTime = subTask.getStartTime();
+        Duration subTaskDuration = subTask.getDuration();
+        LocalDateTime subTaskEndTime = subTask.getEndTime();
+        if (epic.getStartTime() == null) {
+            epic.setStartTime(subTaskStartTime);
+            epic.setDuration(subTaskDuration);
+            epic.setEndTime(subTaskEndTime);
+        } else {
+            if (epic.getStartTime().isAfter(subTaskStartTime)) {
+                epic.setStartTime(subTaskStartTime);
+            }
+            if (subTaskEndTime.isAfter(epic.getEndTime())) {
+                epic.setEndTime(subTask.getEndTime());
+            }
+            epic.setDuration(Duration.between(epic.getStartTime(), epic.getEndTime()));
+        }
     }
 }
