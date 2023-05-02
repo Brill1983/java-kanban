@@ -6,6 +6,8 @@ import model.*;
 import java.io.*;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -13,7 +15,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     protected Path path;
 
-    static final String HEADER = "id,type,name,status,description,epic\n";
+    static final String HEADER = "id,type,name,status,description,epic,startTime,duration,endTime\n";
 
     public FileBackedTasksManager(HistoryManager historyManager, Path path) {
         super(historyManager);
@@ -65,7 +67,11 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                         break;
 
                     case EPIC:
-                        epics.put(id, (Epic) task);
+                        Epic epic = (Epic) task;
+                        if (epic.getStartTime() != null) {
+                            epic.setEndTime(epic.getStartTime().plus(epic.getDuration()));
+                        }
+                        epics.put(id, epic);
                         break;
 
                     case SUBTASK:
@@ -73,7 +79,6 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                         Epic e = epics.get(subTasks.get(id).getEpic());
                         e.setSubTasks(createList(e));
                         break;
-
                 }
                 if (maxId < id) {
                     maxId = id;
@@ -132,20 +137,32 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         int id = Integer.parseInt(columns[0]);
         Status status = Status.valueOf(columns[3]);
         TaskType type = TaskType.valueOf(columns[1]);
+
+
         Task task;
         switch (type) {
             case TASK:
-                task = new Task(id, columns[2], columns[4]);
+                task = new Task(id, columns[2], columns[4], LocalDateTime.parse(columns[6]), Duration.parse(columns[7]));
                 task.setStatus(status);
                 break;
 
             case EPIC:
                 task = new Epic(id, columns[2], columns[4]);
                 task.setStatus(status);
+                if (!columns[6].equals("null")) {
+                    task.setStartTime(LocalDateTime.parse(columns[6]));
+                } else {
+                    task.setStartTime(null);
+                }
+                if (!columns[7].equals("null")) {
+                    task.setDuration(Duration.parse(columns[7]));
+                } else {
+                    task.setDuration(null);
+                }
                 break;
 
             case SUBTASK:
-                task = new SubTask(id, columns[2], columns[4], Integer.parseInt(columns[5]));
+                task = new SubTask(id, columns[2], columns[4], Integer.parseInt(columns[5]), LocalDateTime.parse(columns[6]), Duration.parse(columns[7]));
                 task.setStatus(status);
                 break;
 

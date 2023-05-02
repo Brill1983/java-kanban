@@ -16,18 +16,19 @@ public class Main {
 
     public static void main(String[] args) {
 // Перенося блоки команд в комментарий, можно менять варианты тестирования
+//        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
 //        TaskManager saveInFileByManager = new FileBackedTasksManager(Managers.getDefaultHistory(), Paths.get("test.csv"));
-//        Task task1 = saveInFileByManager.createTask(new Task("Task #1", "DT", LocalDateTime.now(), Duration.ofDays(2)));
+//        Task task1 = saveInFileByManager.createTask(new Task("Task #1", "DT", startTime, Duration.ofDays(2)));
 //        Task task2 = saveInFileByManager.createTask(new Task("Task #2", "DT", LocalDateTime.of(2023, 04, 30, 21, 30), Duration.ofMinutes(35)));
-//        Task task3 = saveInFileByManager.createTask(new Task("Task #3", "DT", LocalDateTime.now().plusHours(12), Duration.ofHours(10)));
+//        Task task3 = saveInFileByManager.createTask(new Task("Task #3", "DT", startTime.plusHours(12), Duration.ofHours(10)));
 //        Epic epic4 = saveInFileByManager.createEpic(new Epic("Epic #4", "DE"));
 //        Epic epic5 = saveInFileByManager.createEpic(new Epic("Epic #5", "DE"));
 //        Epic epic6 = saveInFileByManager.createEpic(new Epic("Epic #6", "DE"));
-//        SubTask subTask7 = saveInFileByManager.createSubTask(new SubTask("SubTask #7", "DS", 5));
-//        SubTask subTask8 = saveInFileByManager.createSubTask(new SubTask("SubTask #8", "DS", 6));
-//        SubTask subTask9 = saveInFileByManager.createSubTask(new SubTask("SubTask #9", "DS", 6));
-//        SubTask subTask10 = saveInFileByManager.createSubTask(new SubTask("SubTask #10", "DS", 6));
-//        SubTask subTask11 = saveInFileByManager.createSubTask(new SubTask("SubTask #11", "DS", 4));
+//        SubTask subTask7 = saveInFileByManager.createSubTask(new SubTask("SubTask #7", "DS", 5, startTime, Duration.ofMinutes(10)));
+//        SubTask subTask8 = saveInFileByManager.createSubTask(new SubTask("SubTask #8", "DS", 6, startTime.plusMinutes(30), Duration.ofMinutes(10)));
+//        SubTask subTask9 = saveInFileByManager.createSubTask(new SubTask("SubTask #9", "DS", 6, startTime.plusMinutes(35), Duration.ofMinutes(10)));
+//        SubTask subTask10 = saveInFileByManager.createSubTask(new SubTask("SubTask #10", "DS", 6, startTime, Duration.ofMinutes(20)));
+////        SubTask subTask11 = saveInFileByManager.createSubTask(new SubTask("SubTask #11", "DS", 4));
 //
 //        System.out.println("Get Task, Epic, SubTask by ID");
 //        System.out.println(saveInFileByManager.getTaskById(1));
@@ -76,14 +77,14 @@ public class Main {
         SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", 6, startTime.plusMinutes(30), Duration.ofMinutes(10)));
         SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 6, startTime.plusMinutes(35), Duration.ofMinutes(10)));
         SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 6, startTime, Duration.ofMinutes(20)));
-
-        System.out.println(taskManager.getEpicById(6).getStartTime() + "---" + taskManager.getEpicById(6).getEndTime() + " --- " + taskManager.getEpicById(6).getDuration().toMinutes());
 //
-//        System.out.println("Update task");
-//        Task correctedTask = new Task(3, "Task #3.1", "new DT");
-//        System.out.println(taskManager.getTaskById(3));
-//        taskManager.updateTask(correctedTask, Status.IN_PROGRESS);
-//        System.out.println();
+//        System.out.println(taskManager.getEpicById(6).getStartTime() + "---" + taskManager.getEpicById(6).getEndTime() + " --- " + taskManager.getEpicById(6).getDuration().toMinutes());
+
+        System.out.println("Update task");
+        Task correctedTask = new Task(3, "Task #3.1", "new DT", null, null);
+        System.out.println(taskManager.getTaskById(3));
+        taskManager.updateTask(correctedTask, Status.IN_PROGRESS);
+        System.out.println();
 //        System.out.println(taskManager.getTaskById(3));
 //        System.out.println();
 //        System.out.println("Update epic");
@@ -93,12 +94,17 @@ public class Main {
 //        System.out.println();
 //        System.out.println(taskManager.getEpicById(5));
         System.out.println();
-//        System.out.println("Update subTask");
+        System.out.println("Update subTask");
 //        System.out.println(taskManager.getSubTaskById(10));
 //        System.out.println(taskManager.getEpicById(5));
 //        System.out.println(taskManager.getEpicById(6));
 //        System.out.println();
-//        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", 5, startTime, Duration.ofMinutes(20)), Status.IN_PROGRESS);
+        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", 5, null, null), Status.IN_PROGRESS);
+
+        List<Task> priorTaskList = taskManager.getPrioritizedTasks();
+        for (Task task : priorTaskList) {
+            System.out.println(task);
+        }
 //        System.out.println(taskManager.getEpicById(5).getStartTime() + "---" + taskManager.getEpicById(5).getEndTime() + " --- " + taskManager.getEpicById(5).getDuration().toMinutes());
 //        System.out.println(taskManager.getEpicById(6).getStartTime() + "---" + taskManager.getEpicById(6).getEndTime() + " --- " + taskManager.getEpicById(6).getDuration().toMinutes());
 //        System.out.println(taskManager.getSubTaskById(10));

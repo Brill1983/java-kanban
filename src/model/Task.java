@@ -42,6 +42,12 @@ public class Task {
     }
 
     public LocalDateTime getEndTime() {
+        if (startTime == null) {
+            return null;
+        }
+        if (duration == null) {
+            return startTime;
+        }
         return startTime.plus(duration);
     }
 
@@ -99,7 +105,7 @@ public class Task {
 
     @Override
     public String toString() {
-        return new String(id + ",TASK," + name + "," + status + "," + description + ",");
+        return new String(id + ",TASK," + name + "," + status + "," + description + ", ," + startTime + "," + duration);
     }
 
     @Override

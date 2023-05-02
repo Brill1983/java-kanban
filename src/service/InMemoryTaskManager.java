@@ -4,9 +4,7 @@ import model.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
@@ -14,6 +12,7 @@ public class InMemoryTaskManager implements TaskManager {
     protected HashMap<Integer, Epic> epics;
     protected HashMap<Integer, SubTask> subTasks;
     protected HistoryManager historyManager;
+    protected Set<Task> prioritizedTasks;
     protected int seq = 0;
 
     public InMemoryTaskManager(HistoryManager historyManager) {
@@ -21,6 +20,7 @@ public class InMemoryTaskManager implements TaskManager {
         this.epics = new HashMap<>();
         this.subTasks = new HashMap<>();
         this.historyManager = historyManager;
+        this.prioritizedTasks = new TreeSet<>(taskComparator);
     }
 
     private int generateId() { //генератор id
@@ -51,6 +51,7 @@ public class InMemoryTaskManager implements TaskManager {
     public Task createTask(Task task) { //создание Таска
         task.setId(generateId());
         tasks.put(task.getId(), task);
+        prioritizedTasks.add(task);
         return task;
     }
 
@@ -78,6 +79,7 @@ public class InMemoryTaskManager implements TaskManager {
         epic.setSubTasks(subTaskList); // сохраняем обновленный список сабтасков в эпик
         createEpicDateTime(subTask, epic);
         epics.put(epic.getId(), epic); //записываем эпик в мапу на прежнее место
+        prioritizedTasks.add(subTask);
         return subTask;
     }
 
@@ -113,12 +115,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void updateTask(Task task, Status status) { //обновление Таска
+        if (!tasks.containsKey(task.getId())) {
+            System.out.println("The task has incorrect number");
+            return;
+        }
         Task saved = tasks.get(task.getId());
+        prioritizedTasks.remove(saved);
         saved.setName(task.getName());
         saved.setStatus(status);
         saved.setDescription(task.getDescription());
         saved.setStartTime(task.getStartTime());
         saved.setDuration(task.getDuration());
+        prioritizedTasks.add(saved);
     }
 
     @Override
@@ -145,7 +153,8 @@ public class InMemoryTaskManager implements TaskManager {
             System.out.println("The subtask has incorrect number");
             return;
         }
-        SubTask saved = subTasks.get(subTask.getId()); // из хранилиза СабТасков вынули равную по ID с входящей
+        SubTask saved = subTasks.get(subTask.getId()); // из хранилища СабТасков вынули равную по ID с входящей
+        prioritizedTasks.remove(saved);
         saved.setName(subTask.getName());
         saved.setDescription(subTask.getDescription());
         saved.setStatus(status);
@@ -171,24 +180,8 @@ public class InMemoryTaskManager implements TaskManager {
             newEpic.setStatus(calculateStatus(newEpicId));
             newEpic.setSubTasks(createList(newEpic));
         }
-
-//        Epic previousEpic = epics.get(oldEpicId); // отдельно сохранили Эпик выгруженной из хранилища СабТаски
-//        Epic epic = epics.get(newEpicId); // получили эпик из входящей СабТаски
-//        Epic savedEpic = epics.get(epic.getId()); // проверяем что такой эпик есть в хранилище Эпиков
-//        if (savedEpic == null) {
-//            System.out.println("The epic for subtask has incorrect number");
-//            return;
-//        }
-//        saved.setEpic(epic); // присвоили Эпик из входящей СабТаски в выгруженную СабТаску из хранилища
-//        subTasks.put(subTask.getId(), saved);// записали выгруженную СабаТаску с измененными полями обартно в хранилище под тем же ID
-//         теперь надо у Эпика пришедшего с задачей и у эпика старой СабТаски пересчитать статус и перезаписать список
-//        savedEpic.setStatus(calculateStatus(savedEpic));
-//        savedEpic.setSubTasks(createList(savedEpic));
-//        epics.put(epic.getId(), savedEpic);
-//        previousEpic.setStatus(calculateStatus(previousEpic));
-//        previousEpic.setSubTasks(createList(previousEpic));
-//        epics.put(previousEpic.getId(), previousEpic);
-
+        prioritizedTasks.add(saved);
+        System.out.println();
     }
 
     @Override
@@ -269,6 +262,12 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
+    public List<Task> getPrioritizedTasks() {
+        List<Task> prioritizedTaskList = new ArrayList<>(prioritizedTasks);
+        return prioritizedTaskList;
+    }
+
+    @Override
     public List<SubTask> getSubTaskList(Epic epic) { //получение списка СабТасков принимаемого Эпика
         if (!epics.containsValue(epic)) {
             System.out.println("No such Epic in storage");
@@ -321,6 +320,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     public void createEpicDateTime(SubTask subTask, Epic epic) {
         LocalDateTime subTaskStartTime = subTask.getStartTime();
+        if (subTaskStartTime == null) {
+            return;
+        }
         Duration subTaskDuration = subTask.getDuration();
         LocalDateTime subTaskEndTime = subTask.getEndTime();
         if (epic.getStartTime() == null) {
@@ -337,4 +339,23 @@ public class InMemoryTaskManager implements TaskManager {
             epic.setDuration(Duration.between(epic.getStartTime(), epic.getEndTime()));
         }
     }
+
+    Comparator<Task> taskComparator = (o1, o2) -> {
+        if (o1.getId() == o2.getId()) {
+            return 0;
+        }
+        if (o1.getStartTime() == null) {
+            return 1;
+        }
+        if (o2.getStartTime() == null) {
+            return -1;
+        }
+        if (o1.getStartTime().isBefore(o2.getStartTime())) {
+            return -1;
+        } else if (o1.getStartTime().isAfter(o2.getStartTime())) {
+            return 1;
+        } else {
+            return o1.getId() - o2.getId();
+        }
+    };
 }
