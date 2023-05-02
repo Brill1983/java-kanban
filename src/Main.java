@@ -63,9 +63,9 @@ public class Main {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
 
         System.out.println("Create Tasks, Epics, SubTasks");
-        Task task1 = taskManager.createTask(new Task("Task #1", "DT", startTime, Duration.ofMinutes(10)));
-        Task task2 = taskManager.createTask(new Task("Task #2", "DT", startTime.plusMinutes(10), Duration.ofMinutes(10)));
-        Task task3 = taskManager.createTask(new Task("Task #3", "DT", startTime.plusMinutes(20), Duration.ofMinutes(10)));
+        Task task1 = taskManager.createTask(new Task("Task #1", "DT", startTime, Duration.ofMinutes(9)));
+        Task task2 = taskManager.createTask(new Task("Task #2", "DT", startTime.plusMinutes(50), Duration.ofMinutes(9)));
+        Task task3 = taskManager.createTask(new Task("Task #3", "DT", startTime.plusMinutes(60), Duration.ofMinutes(9)));
 //        System.out.println(task1.getStartTime() + " -- " + task1.getEndTime());
 //        System.out.println(task2.getStartTime() + " -- " + task2.getEndTime());
 //        System.out.println(task3.getStartTime() + " -- " + task3.getEndTime());
@@ -73,18 +73,18 @@ public class Main {
         Epic epic5 = taskManager.createEpic(new Epic("Epic #5", "DE"));
         Epic epic6 = taskManager.createEpic(new Epic("Epic #6", "DE"));
 
-        SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", 5, startTime, Duration.ofMinutes(10)));
-        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", 6, startTime.plusMinutes(30), Duration.ofMinutes(10)));
-        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 6, startTime.plusMinutes(35), Duration.ofMinutes(10)));
-        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 6, startTime, Duration.ofMinutes(20)));
+        SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", 5, startTime.minusMinutes(10), Duration.ofMinutes(9)));
+        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", 6, startTime.plusMinutes(10), Duration.ofMinutes(19)));
+        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 6, startTime.plusMinutes(30), Duration.ofMinutes(7)));
+        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 6, null, Duration.ofMinutes(20)));
 //
 //        System.out.println(taskManager.getEpicById(6).getStartTime() + "---" + taskManager.getEpicById(6).getEndTime() + " --- " + taskManager.getEpicById(6).getDuration().toMinutes());
 
-        System.out.println("Update task");
-        Task correctedTask = new Task(3, "Task #3.1", "new DT", null, null);
-        System.out.println(taskManager.getTaskById(3));
-        taskManager.updateTask(correctedTask, Status.IN_PROGRESS);
-        System.out.println();
+//        System.out.println("Update task");
+//        Task correctedTask = new Task(3, "Task #3.1", "new DT", null, null);
+//        System.out.println(taskManager.getTaskById(3));
+//        taskManager.updateTask(correctedTask, Status.IN_PROGRESS);
+//        System.out.println();
 //        System.out.println(taskManager.getTaskById(3));
 //        System.out.println();
 //        System.out.println("Update epic");
@@ -93,32 +93,32 @@ public class Main {
 //        taskManager.updateEpic(correctedEpic);
 //        System.out.println();
 //        System.out.println(taskManager.getEpicById(5));
-        System.out.println();
-        System.out.println("Update subTask");
+//        System.out.println();
+//        System.out.println("Update subTask");
 //        System.out.println(taskManager.getSubTaskById(10));
 //        System.out.println(taskManager.getEpicById(5));
 //        System.out.println(taskManager.getEpicById(6));
 //        System.out.println();
-        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", 5, null, null), Status.IN_PROGRESS);
+//        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", 5, null, null), Status.IN_PROGRESS);
 
-        List<Task> priorTaskList = taskManager.getPrioritizedTasks();
-        for (Task task : priorTaskList) {
-            System.out.println(task);
-        }
+//        List<Task> priorTaskList = taskManager.getPrioritizedTasks();
+//        for (Task task : priorTaskList) {
+//            System.out.println(task);
+//        }
 //        System.out.println(taskManager.getEpicById(5).getStartTime() + "---" + taskManager.getEpicById(5).getEndTime() + " --- " + taskManager.getEpicById(5).getDuration().toMinutes());
 //        System.out.println(taskManager.getEpicById(6).getStartTime() + "---" + taskManager.getEpicById(6).getEndTime() + " --- " + taskManager.getEpicById(6).getDuration().toMinutes());
 //        System.out.println(taskManager.getSubTaskById(10));
-//        System.out.println(taskManager.getEpicById(5));
-//        System.out.println(taskManager.getEpicById(6));
+        System.out.println(taskManager.getEpicById(5));
+        System.out.println(taskManager.getEpicById(6));
 //        System.out.println();
 //        System.out.println("Get Task, Epic, SubTask by ID");
-//        System.out.println(taskManager.getTaskById(1));
-//        System.out.println(taskManager.getTaskById(3));
+        System.out.println(taskManager.getTaskById(1));
+        System.out.println(taskManager.getTaskById(3));
 //        System.out.println(taskManager.getEpicById(4));
 //
-//        System.out.println(taskManager.getSubTaskById(8));
-//        System.out.println(taskManager.getSubTaskById(9));
-//        System.out.println(taskManager.getSubTaskById(10));
+        System.out.println(taskManager.getSubTaskById(8));
+        System.out.println(taskManager.getSubTaskById(9));
+        System.out.println(taskManager.getSubTaskById(10));
 //        System.out.println();
 //        System.out.println("Get all Tasks, Epics, SubTasks");
 //        System.out.println(taskManager.getAllTasks());
@@ -135,13 +135,13 @@ public class Main {
 //        System.out.println(taskManager.getAllEpics());
 //        System.out.println();
 //        System.out.println(taskManager.getAllSubTasks());
-//
+//        taskManager.deleteSubTaskById(8);
 //        taskManager.deleteSubTaskById(10);
 //        System.out.println(taskManager.getAllSubTasks());
 //        System.out.println();
 //        System.out.println(taskManager.getEpicById(6));
 //        System.out.println();
-//        System.out.println("Delete all tasks");
+        System.out.println("Delete all tasks");
 //        System.out.println(taskManager.getAllTasks());
 //        taskManager.deleteAllTasks();
 //        System.out.println(taskManager.getAllTasks());
@@ -153,7 +153,7 @@ public class Main {
 //        System.out.println();
 //        System.out.println("Delete all sub tasks");
 //        System.out.println(taskManager.getAllSubTasks());
-//        taskManager.deleteAllSubTasks();
+        taskManager.deleteAllSubTasks();
 //        System.out.println(taskManager.getAllSubTasks());
 //        System.out.println();
 //        System.out.println(taskManager.getAllEpics());
