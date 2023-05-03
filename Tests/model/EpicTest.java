@@ -22,7 +22,7 @@ public class EpicTest {
     @Test
     public void epicHasNewStatusWhenSubTaskListIsEmpty() {
         Epic epic = taskManager.createEpic(new Epic("Epic #4", "DE"));
-        Assertions.assertEquals(NEW, epic.getStatus());
+        Assertions.assertEquals(NEW, epic.getStatus(), "Status generates incorrectly");
     }
 
     @Test

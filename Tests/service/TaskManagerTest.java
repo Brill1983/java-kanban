@@ -1,13 +1,43 @@
 package service;
 
+import model.Epic;
+import model.Status;
+import model.SubTask;
+import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class TaskManagerTest {
+abstract class TaskManagerTest <T extends TaskManager> {
+
+    protected T taskManager;
+
+
+
+    abstract void init();
+
+    @BeforeEach
+    void beforeEach() {
+        taskManager = (T) Managers.getDefault();
+    }
 
     @Test
     void getAllTasks() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task("New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        List<Task> taskList = taskManager.getAllTasks();
+        assertEquals(2,taskList.size(), "Should contain 2 elements");
+        assertEquals(task1, taskList.get(0), "First task should be first in list");
+        assertEquals(task2, taskList.get(1), "Second task should be second in list");
     }
 
     @Test
@@ -20,69 +50,386 @@ class TaskManagerTest {
 
     @Test
     void createTask() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        Task result = taskManager.createTask(task);
+        assertNotNull(result, "Task create failure");
+        assertTrue(result.getId() > 0, "ID counts failure");
+        assertEquals("Task #1", result.getName(), "Wrong name was written");
+        assertEquals("DT", result.getDescription(), "Wrong description was written");
+        assertEquals(startTime, result.getStartTime(), "Wrong start time was written");
+        assertEquals(Duration.ofMinutes(9), result.getDuration(), "Wrong duration was written");
+        assertEquals(startTime.plus(Duration.ofMinutes(9)), result.getEndTime(), "Wrong end time calculation");
+    }
+
+    @Test
+    void createTaskWithNull() {
+        Task result = taskManager.createTask(null);
+        assertNull(result, "If incoming is null, result is null");
     }
 
     @Test
     void createEpic() {
+        Epic epic = new Epic("Epic #1", "DT");
+        Epic result = taskManager.createEpic(epic);
+        assertNotNull(result, "Epic create failure");
+        assertTrue(result.getId() > 0, "ID counts failure");
+        assertEquals("Epic #1", result.getName(), "Wrong name was written");
+        assertEquals("DT", result.getDescription(), "Wrong description was written");
     }
 
     @Test
-    void createSubTask() {
+    void createEpicWithNull() {
+        Epic result = taskManager.createEpic(null);
+        assertNull(result, "If incoming is null, result is null");
+    }
+
+    @Test
+    void createSubTaskWhenEpicExists() {
+        taskManager.createEpic(new Epic("Epic #1", "DT"));
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        SubTask subTask = new SubTask("Subtask #1", "DT", 1, startTime, Duration.ofMinutes(9));
+        SubTask result = taskManager.createSubTask(subTask);
+        assertNotNull(result, "Subtask create failure");
+        assertTrue(result.getId() > 0, "ID counts failure");
+        assertEquals("Subtask #1", result.getName(), "Wrong name was written");
+        assertEquals("DT", result.getDescription(), "Wrong description was written");
+        assertEquals(1, result.getEpic(), "Epic number was written incorrectly");
+        assertEquals(startTime, result.getStartTime(), "Wrong start time was written");
+        assertEquals(Duration.ofMinutes(9), result.getDuration(), "Wrong duration was written");
+        assertEquals(startTime.plus(Duration.ofMinutes(9)), result.getEndTime(), "Wrong end time calculation");
+    }
+
+    @Test
+    void createSubTaskWithNull() {
+        SubTask result = taskManager.createSubTask(null);
+        assertNull(result, "If incoming is null, result is null");
+    }
+
+    @Test
+    void epicStartTimeDurationAndEndTimeShouldChangeWithSubTasks() {
+        Epic epic = taskManager.createEpic(new Epic("Epic #1", "DT"));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask2 = new SubTask("Subtask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("Subtask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createSubTask(subTask2);
+        taskManager.createSubTask(subTask3);
+        assertEquals(startTime1, epic.getStartTime(), "Epic should starts with first sub task start");
+        assertEquals(startTime2.plus(Duration.ofMinutes(5)), epic.getEndTime(), "Epic should ends with last sub task end");
+        assertEquals(Duration.ofMinutes(15), epic.getDuration(), "Duration of Epic should be from start of first subtask till end of las sub task");
+    }
+
+    @Test
+    void epicSubTaskListShouldChangeWithSubtasks() {
+        Epic epic = taskManager.createEpic(new Epic("Epic #1", "DT"));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask2 = new SubTask("Subtask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("Subtask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createSubTask(subTask2);
+        taskManager.createSubTask(subTask3);
+        assertEquals(2, epic.getSubTasks().size(), "Some Subtasks doesn't write in epic list");
+        taskManager.deleteSubTaskById(3);
+        assertEquals(1, epic.getSubTasks().size(), "Some Subtasks doesn't delete from epic list");
+    }
+
+    @Test
+    void createSubTaskWhenNoEpic() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        SubTask subTask = new SubTask("Subtask #1", "DT", 1, startTime, Duration.ofMinutes(9));
+        SubTask result = taskManager.createSubTask(subTask);
+        assertNull(result, "Subtask without epic should return null");
     }
 
     @Test
     void getTaskById() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        taskManager.createTask(task);
+        assertEquals(task, taskManager.getTaskById(1),"Index in storage is incorrect");
+        assertNull(taskManager.getTaskById(0), "No such task index in storage - result should be Null");
     }
 
     @Test
     void getEpicById() {
+        Epic epic = new Epic("Epic #1", "DT");
+        taskManager.createEpic(epic);
+        assertEquals(epic, taskManager.getEpicById(1),"Index in storage is incorrect");
+        assertNull(taskManager.getEpicById(0), "No such task index in storage - result should be Null");
     }
 
     @Test
     void getSubTaskById() {
+        taskManager.createEpic(new Epic("Epic #1", "DT"));
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        SubTask subTask = new SubTask("Subtask #1", "DT", 1, startTime, Duration.ofMinutes(9));
+        taskManager.createSubTask(subTask);
+        assertEquals(subTask, taskManager.getSubTaskById(2),"Index in storage is incorrect");
+        assertNull(taskManager.getSubTaskById(3), "No such task index in storage - result should be Null");
     }
 
     @Test
-    void updateTask() {
+    void updateTaskWithIncomingTaskWithNewStatusAndNewTimeAndNewDuration() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task(1,"New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        taskManager.createTask(task1);
+        taskManager.updateTask(task2, Status.IN_PROGRESS);
+        assertEquals("New Task", taskManager.getTaskById(1).getName(), "Task name changed incorrectly");
+        assertEquals("New DT", taskManager.getTaskById(1).getDescription(), "Task description changed incorrectly");
+        assertEquals(startTime2, taskManager.getTaskById(1).getStartTime(), "Task start time changed incorrectly");
+        assertEquals(Duration.ofMinutes(5), taskManager.getTaskById(1).getDuration(), "Task duration changed incorrectly");
+        assertEquals(Status.IN_PROGRESS, taskManager.getTaskById(1).getStatus(), "Task status changed incorrectly");
+    }
+    @Test
+    void updateTaskWithIncomingTaskWithNullStatus() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task(1,"New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        taskManager.createTask(task1);
+        taskManager.updateTask(task2, null);
+        assertEquals(Status.NEW, taskManager.getTaskById(1).getStatus(), "Task status changed incorrectly");
     }
 
     @Test
-    void updateEpic() {
+    void updateTaskWithNullTask() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        taskManager.createTask(task);
+        taskManager.updateTask(null, Status.IN_PROGRESS);
+        assertEquals(task, taskManager.getTaskById(1), "If incoming is Null, task shouldn't change");
     }
 
     @Test
-    void updateSubTask() {
+    void updateTaskWithWrongId() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task(2,"New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        taskManager.createTask(task1);
+        taskManager.updateTask(task2, Status.IN_PROGRESS);
+        assertEquals(task1, taskManager.getTaskById(1), "Task should not change");
+        assertNull(taskManager.getTaskById(2), "Second task should not be written");
+    }
+
+    @Test
+    void updateEpicWithIncomingEpic() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        Epic epic2 = new Epic(1,"New Epic", "New DT");
+        taskManager.createEpic(epic1);
+        taskManager.updateEpic(epic2);
+        assertEquals("New Epic", taskManager.getEpicById(1).getName(), "Task name changed incorrectly");
+        assertEquals("New DT", taskManager.getEpicById(1).getDescription(), "Task description changed incorrectly");
+        assertNull(taskManager.getEpicById(1).getStartTime(), "The start time of new epic should ne null");
+        assertNull(taskManager.getEpicById(1).getDuration(), "Task duration of epic should be null");
+        assertNull(taskManager.getEpicById(1).getEndTime(), "Task duration of epic should be null");
+    }
+
+    @Test
+    void updateEpicWithNullEpic() {
+        Epic epic = new Epic("Epic #1", "DT");
+        taskManager.createEpic(epic);
+        taskManager.updateEpic(null);
+        assertEquals(epic, taskManager.getEpicById(1), "If incoming is Null, epic shouldn't change");
+    }
+
+    @Test
+    void updateEpicWithWrongID() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        Epic epic2 = new Epic(2,"New Epic", "New DT");
+        taskManager.createEpic(epic1);
+        taskManager.updateEpic(epic2);
+        assertEquals(epic1, taskManager.getEpicById(1), "Epic should not change");
+        assertNull(taskManager.getEpicById(2), "Second epic should not be written");
+    }
+
+    @Test
+    void updateSubTaskWithIncomingTaskWithCorrectEpicWithNewTimeAndDuration() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Epic epic1 = new Epic("Epic #1", "DT");
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(2,"New SubTask", "New DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.updateSubTask(subTask3, Status.IN_PROGRESS);
+        assertEquals("New SubTask", taskManager.getSubTaskById(2).getName(), "Sub task name changed incorrectly");
+        assertEquals("New DT", taskManager.getSubTaskById(2).getDescription(), "Sub task description changed incorrectly");
+        assertEquals(startTime2, taskManager.getSubTaskById(2).getStartTime(), "Sub task start time changed incorrectly");
+        assertEquals(Duration.ofMinutes(5), taskManager.getSubTaskById(2).getDuration(), "Sub task duration changed incorrectly");
+        assertEquals(Status.IN_PROGRESS, taskManager.getSubTaskById(2).getStatus(), "Sub task status changed incorrectly");
+    }
+
+    @Test
+    void updateSubTaskWithNull() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Epic epic1 = new Epic("Epic #1", "DT");
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime, Duration.ofMinutes(9));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.updateSubTask(null, Status.IN_PROGRESS);
+        assertEquals(subTask2, taskManager.getSubTaskById(2), "If incoming is Null, sub task shouldn't change");
+    }
+
+    @Test
+    void updateSubTaskWithWrongId() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Epic epic1 = new Epic("Epic #1", "DT");
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"New SubTask", "New DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.updateSubTask(subTask3, Status.IN_PROGRESS);
+        assertEquals(subTask2, taskManager.getSubTaskById(2), "Sub task should not change");
+        assertNull(taskManager.getSubTaskById(3), "Second sub task should not be written");
     }
 
     @Test
     void deleteTaskById() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task1 = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        taskManager.createTask(task1);
+        taskManager.deleteTaskById(1);
+        assertNull(taskManager.getTaskById(1), "Should be null after delete");
+    }
+
+    @Test
+    void deleteTaskByWrongId() {
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task1 = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        taskManager.createTask(task1);
+        taskManager.deleteTaskById(2);
+        assertNull(taskManager.getTaskById(2), "Should be null if no index to delete");
+        assertEquals(task1, taskManager.getTaskById(1), "Should be no changes with task");
     }
 
     @Test
     void deleteEpicById() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        taskManager.createEpic(epic1);
+        taskManager.deleteEpicById(1);
+        assertNull(taskManager.getEpicById(1), "Should be null after delete");
+    }
+
+    @Test
+    void deleteEpicWithWrongId() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        taskManager.createEpic(epic1);
+        taskManager.deleteEpicById(2);
+        assertNull(taskManager.getEpicById(2), "Should be null if ID doesn't exist");
+        assertEquals(epic1, taskManager.getEpicById(1), "Should be no changes with epic");
     }
 
     @Test
     void deleteSubTaskById() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Epic epic1 = new Epic("Epic #1", "DT");
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.deleteSubTaskById(2);
+        assertNull(taskManager.getSubTaskById(2), "Sub task was not deleted");
+        assertEquals(0, taskManager.getEpicById(1).getSubTasks().size(), "Epic sub task list should change");
+    }
+
+    @Test
+    void deleteSubTaskWithWrongId() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Epic epic1 = new Epic("Epic #1", "DT");
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.deleteSubTaskById(3);
+        assertNull(taskManager.getSubTaskById(3), "Should be null if ID doesn't exist");
+        assertEquals(subTask2, taskManager.getSubTaskById(2), "Should be no changes with sub task");
     }
 
     @Test
     void deleteAllTasks() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task("New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        taskManager.createTask(task1);
+        taskManager.createTask(task2);
+        taskManager.deleteAllTasks();
+        assertNull(taskManager.getTaskById(1), "Should be deleted");
+        assertNull(taskManager.getTaskById(1), "Should be deleted");
+        assertEquals(0, taskManager.getAllTasks().size(), "List of tasks should be 0 size");
     }
 
     @Test
     void deleteAllEpics() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        Epic epic2 = new Epic("Epic #2", "New DT");
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask3 = new SubTask("SubTask #3", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask4 = new SubTask("SubTask #4", "DT", 2, startTime2, Duration.ofMinutes(5));
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        taskManager.createSubTask(subTask3);
+        taskManager.createSubTask(subTask4);
+        taskManager.deleteAllEpics();
+        assertNull(taskManager.getEpicById(1), "Should be deleted");
+        assertNull(taskManager.getEpicById(2), "Should be deleted");
+        assertEquals(0, taskManager.getAllEpics().size(), "List of epics should be 0 size");
+        assertNull(taskManager.getSubTaskById(3), "Should be deleted");
+        assertNull(taskManager.getSubTaskById(4), "Should be deleted");
+        assertEquals(0, taskManager.getAllSubTasks().size(), "List of subtasks should be 0 size");
     }
 
     @Test
     void deleteAllSubTasks() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask1 = new SubTask("SubTask #3", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("SubTask #4", "DT", 2, startTime2, Duration.ofMinutes(5));
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
+        taskManager.deleteAllEpics();
+        assertNull(taskManager.getSubTaskById(1), "Should be deleted");
+        assertNull(taskManager.getSubTaskById(2), "Should be deleted");
+        assertEquals(0, taskManager.getAllSubTasks().size(), "List of subtasks should be 0 size");
     }
 
     @Test
     void getSubTaskList() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("SubTask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.createSubTask(subTask3);
+        List <SubTask> list = taskManager.getSubTaskList(epic1);
+        assertEquals(2, list.size(), "Should contain 2 elements");
+    }
+
+    @Test
+    void getSubTaskListFomEpicWithWrongId() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        Epic epic4 = new Epic(4, "Epic #4", "DT");
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("SubTask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createEpic(epic1);
+        taskManager.createSubTask(subTask2);
+        taskManager.createSubTask(subTask3);
+        assertNull(taskManager.getSubTaskList(epic4), "Should return null");
     }
 
     @Test
     void getHistory() {
+    }
+
+    @Test
+    void getPrioritizedTasks() {
     }
 }

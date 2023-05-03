@@ -41,13 +41,6 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-//        return "Epic{" +
-//                "id=" + getId() +
-//                ", name='" + getName() + '\'' +
-//                ", description='" + getDescription() + '\'' +
-//                ", status='" + getStatus().getName() + '\'' +
-//                ", subTasks=" + subTasks.size() +
-//                '}';
         return new String(getId() + ",EPIC," + getName() + "," + getStatus() + "," + getDescription() + ", ,"
                 + getStartTime() + "," + getDuration() + "," + getEndTime());
     }
@@ -61,11 +54,6 @@ public class Epic extends Task {
                 Objects.equals(getName(), epic.getName()) &&
                 Objects.equals(getDescription(), epic.getDescription());
     }
-
-//    @Override
-//    public int hashCode() {
-//        return Objects.hash(getName(),getDescription());
-//    }
 
     @Override
     public int hashCode() {
