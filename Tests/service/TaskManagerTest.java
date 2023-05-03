@@ -17,8 +17,6 @@ abstract class TaskManagerTest <T extends TaskManager> {
 
     protected T taskManager;
 
-
-
     abstract void init();
 
     @BeforeEach
@@ -41,11 +39,48 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
+    void getAllTasksFromEmptyList() {
+        List<Task> taskList = taskManager.getAllTasks();
+        assertEquals(0,taskList.size(), "Should contain 0 elements");
+    }
+
+    @Test
     void getAllEpics() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        Epic epic2 = new Epic("Epic #2", "DT");
+        taskManager.createEpic(epic1);
+        taskManager.createEpic(epic2);
+        List<Epic> epicList = taskManager.getAllEpics();
+        assertEquals(2,epicList.size(), "Should contain 2 elements");
+        assertEquals(epic1, epicList.get(0), "First epic should be first in list");
+        assertEquals(epic2, epicList.get(1), "Second epic should be second in list");
+    }
+
+    @Test
+    void getAllEpicsFromEmptyList() {
+        List<Epic> epicList = taskManager.getAllEpics();
+        assertEquals(0,epicList.size(), "Should contain 0 elements");
     }
 
     @Test
     void getAllSubTasks() {
+        taskManager.createEpic(new Epic("Epic #1", "DT"));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        SubTask subTask1 = new SubTask("Subtask #1", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("Subtask #1", "DT", 1, startTime2, Duration.ofMinutes(5));
+        taskManager.createSubTask(subTask1);
+        taskManager.createSubTask(subTask2);
+        List<SubTask> subTaskList = taskManager.getAllSubTasks();
+        assertEquals(2,subTaskList.size(), "Should contain 2 elements");
+        assertEquals(subTask1, subTaskList.get(0), "First sub task should be first in list");
+        assertEquals(subTask2, subTaskList.get(1), "Second sub task should be second in list");
+    }
+
+    @Test
+    void getAllSubTasksFromEmptyList() {
+        List<SubTask> subTaskList = taskManager.getAllSubTasks();
+        assertEquals(0,subTaskList.size(), "Should contain 0 elements");
     }
 
     @Test
@@ -81,7 +116,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void createEpicWithNull() {
         Epic result = taskManager.createEpic(null);
-        assertNull(result, "If incoming is null, result is null");
+        assertNull(result, "If incoming is null, result should be null");
     }
 
     @Test
@@ -183,6 +218,15 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertEquals(Duration.ofMinutes(5), taskManager.getTaskById(1).getDuration(), "Task duration changed incorrectly");
         assertEquals(Status.IN_PROGRESS, taskManager.getTaskById(1).getStatus(), "Task status changed incorrectly");
     }
+
+    @Test
+    void updateTaskInEmptyHashMap() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        taskManager.updateTask(task1, Status.IN_PROGRESS);
+        assertEquals(0, taskManager.getAllTasks().size(), "Should be no changes in storage");
+    }
+
     @Test
     void updateTaskWithIncomingTaskWithNullStatus() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
@@ -195,7 +239,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
-    void updateTaskWithNullTask() {
+    void updateTaskWithNull() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
         Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
         taskManager.createTask(task);
@@ -226,6 +270,13 @@ abstract class TaskManagerTest <T extends TaskManager> {
         assertNull(taskManager.getEpicById(1).getStartTime(), "The start time of new epic should ne null");
         assertNull(taskManager.getEpicById(1).getDuration(), "Task duration of epic should be null");
         assertNull(taskManager.getEpicById(1).getEndTime(), "Task duration of epic should be null");
+    }
+
+    @Test
+    void updateEpicInEmptyHashMap() {
+        Epic epic = new Epic(1, "Epic #1", "DT");
+        taskManager.updateEpic(epic);
+        assertEquals(0, taskManager.getAllEpics().size(), "Should be no changes in storage");
     }
 
     @Test
@@ -264,6 +315,14 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
+    void updateSubTaskInEmptyHashMap() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        SubTask subTask = new SubTask(1,"SubTask #1", "DT",1, startTime1, Duration.ofMinutes(9));
+        taskManager.updateTask(subTask, Status.IN_PROGRESS);
+        assertEquals(0, taskManager.getAllSubTasks().size(), "Should be no changes in storage");
+    }
+
+    @Test
     void updateSubTaskWithNull() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
         Epic epic1 = new Epic("Epic #1", "DT");
@@ -298,6 +357,13 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
+    void deleteTaskByIdFromEmptyMap() {
+        taskManager.deleteTaskById(1);
+        assertNull(taskManager.getTaskById(1), "Should be null after delete");
+        assertEquals(0, taskManager.getAllTasks().size(), "Storage should stay empty");
+    }
+
+    @Test
     void deleteTaskByWrongId() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
         Task task1 = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
@@ -313,6 +379,13 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpic(epic1);
         taskManager.deleteEpicById(1);
         assertNull(taskManager.getEpicById(1), "Should be null after delete");
+    }
+
+    @Test
+    void deleteEpicByIdFromEmptyMap() {
+        taskManager.deleteEpicById(1);
+        assertNull(taskManager.getEpicById(1), "Should be null after delete");
+        assertEquals(0, taskManager.getAllEpics().size(), "Storage should stay empty");
     }
 
     @Test
@@ -334,6 +407,13 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.deleteSubTaskById(2);
         assertNull(taskManager.getSubTaskById(2), "Sub task was not deleted");
         assertEquals(0, taskManager.getEpicById(1).getSubTasks().size(), "Epic sub task list should change");
+    }
+
+    @Test
+    void deleteSubTaskByIdFromEmptyMap() {
+        taskManager.deleteSubTaskById(1);
+        assertNull(taskManager.getSubTaskById(1), "Should be null after delete");
+        assertEquals(0, taskManager.getAllSubTasks().size(), "Storage should stay empty");
     }
 
     @Test
@@ -412,6 +492,20 @@ abstract class TaskManagerTest <T extends TaskManager> {
     }
 
     @Test
+    void getSubTaskListFromEmptyEpicList() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        assertNull(taskManager.getSubTaskList(epic1), "Should return null");
+    }
+
+    @Test
+    void getSubTaskListFromEmptySubTaskList() {
+        Epic epic1 = new Epic("Epic #1", "DT");
+        taskManager.createEpic(epic1);
+        List <SubTask> list = taskManager.getSubTaskList(epic1);
+        assertEquals(0, list.size(), "Should contain 0 elements");
+    }
+
+    @Test
     void getSubTaskListFomEpicWithWrongId() {
         Epic epic1 = new Epic("Epic #1", "DT");
         Epic epic4 = new Epic(4, "Epic #4", "DT");
@@ -427,6 +521,36 @@ abstract class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getHistory() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
+        Task task1 = taskManager.createTask(new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9)));
+        Epic epic2 = taskManager.createEpic(new Epic("Epic #3", "DT"));
+        SubTask subTask3 = taskManager.createSubTask(new SubTask("SubTask #5", "DT", 2, startTime2, Duration.ofMinutes(9)));
+        taskManager.getTaskById(1);
+        taskManager.getEpicById(2);
+        taskManager.getSubTaskById(3);
+        List<Task> list = taskManager.getHistory();
+        assertEquals(3, list.size(), "List size should be 3");
+        assertEquals(task1, list.get(0), "Task 1 should be first");
+        assertEquals(epic2, list.get(1), "Epic 2 should be second");
+        assertEquals(subTask3, list.get(2), "SubTask 3 should be third");
+        taskManager.getEpicById(2);
+        taskManager.getTaskById(1);
+
+        List<Task> list1 = taskManager.getHistory();
+        assertEquals(subTask3, list1.get(0), "SubTask 3 should be first");
+        assertEquals(epic2, list1.get(1), "Epic 2 should be second");
+        assertEquals(task1, list1.get(2), "Task 1 should be third");
+        taskManager.deleteTaskById(1);
+
+        List<Task> list2 = taskManager.getHistory();
+        assertEquals(2, list2.size(), "History should have size 2 after deletion of 1 task");
+    }
+
+    @Test
+    void getHistoryWhenFromEmptyList() {
+        List<Task> list = taskManager.getHistory();
+        assertEquals(0, list.size(), "Should return empty list");
     }
 
     @Test
