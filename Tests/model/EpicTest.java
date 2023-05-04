@@ -22,38 +22,44 @@ public class EpicTest {
     @Test
     public void epicHasNewStatusWhenAllSubTasksAreNew() {
         Epic epic = taskManager.createEpic(new Epic("Epic #4", "DE"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 1, LocalDateTime.now(), Duration.ofDays(2)));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 1, LocalDateTime.of(2023, 04, 30, 21, 30), Duration.ofMinutes(35)));
+        SubTask subTask1 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 1, LocalDateTime.now(), Duration.ofDays(2)));
+        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 1, LocalDateTime.of(2023, 04, 30, 21, 30), Duration.ofMinutes(35)));
         Assertions.assertEquals(NEW, epic.getStatus(), "Status calculates incorrectly");
     }
 
     @Test
     public void epicHasDoneStatusWhenAllSubTasksAreDone() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
         Epic epic = taskManager.createEpic(new Epic("Epic #4", "DE"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 1, LocalDateTime.now(), Duration.ofDays(2)));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 1, LocalDateTime.of(2023, 04, 30, 21, 30), Duration.ofMinutes(35)));
-        taskManager.updateSubTask(subTask1, DONE);
-        taskManager.updateSubTask(subTask2, DONE);
+        taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 1, startTime1, Duration.ofMinutes(9)));
+        taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 1, startTime2, Duration.ofMinutes(15)));
+        taskManager.updateSubTask(new SubTask(2, "SubTask #9", "DS", DONE, 1, startTime1, Duration.ofMinutes(9)));
+        taskManager.updateSubTask(new SubTask(3,"SubTask #10", "DS", DONE, 1, startTime2, Duration.ofMinutes(15)));
         Assertions.assertEquals(DONE, epic.getStatus(), "Status calculates incorrectly");
     }
 
     @Test
     public void epicHasInProgressStatusWhenSubTasksAreDoneAndNew() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
         Epic epic = taskManager.createEpic(new Epic("Epic #4", "DE"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 1, LocalDateTime.now(), Duration.ofDays(2)));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 1, LocalDateTime.of(2023, 04, 30, 21, 30), Duration.ofMinutes(35)));
-        taskManager.updateSubTask(subTask1, DONE);
-        taskManager.updateSubTask(subTask2, NEW);
+        taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 1, startTime1, Duration.ofMinutes(9)));
+        taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 1, startTime2, Duration.ofMinutes(15)));
+        taskManager.updateSubTask(new SubTask(2,"SubTask #9", "DS", DONE, 1, startTime1, Duration.ofMinutes(9)));
+        taskManager.updateSubTask(new SubTask(3, "SubTask #10", "DS", NEW,1, startTime2, Duration.ofMinutes(15)));
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus(), "Status calculates incorrectly");
     }
 
     @Test
     public void epicHasInProgressStatusWhenSubTasksAreInProgress() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
         Epic epic = taskManager.createEpic(new Epic("Epic #4", "DE"));
-        SubTask subTask1 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", 1, LocalDateTime.now(), Duration.ofDays(2)));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", 1, LocalDateTime.of(2023, 04, 30, 21, 30), Duration.ofMinutes(35)));
-        taskManager.updateSubTask(subTask1, IN_PROGRESS);
-        taskManager.updateSubTask(subTask2, IN_PROGRESS);
+        taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 1, startTime1, Duration.ofMinutes(9)));
+        taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 1, startTime2, Duration.ofMinutes(15)));
+        taskManager.updateSubTask(new SubTask(2, "SubTask #9", "DS", IN_PROGRESS, 1, startTime1, Duration.ofMinutes(9)));
+        taskManager.updateSubTask(new SubTask(3,"SubTask #10", "DS", IN_PROGRESS, 1, startTime2, Duration.ofMinutes(15)));
         Assertions.assertEquals(IN_PROGRESS, epic.getStatus(), "Status calculates incorrectly");
     }
 }

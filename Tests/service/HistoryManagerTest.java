@@ -1,6 +1,7 @@
 package service;
 
 import model.Epic;
+import model.Status;
 import model.SubTask;
 import model.Task;
 import org.junit.jupiter.api.BeforeEach;
@@ -25,9 +26,9 @@ class HistoryManagerTest {
     void add() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
         Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.IN_PROGRESS ,2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -42,9 +43,9 @@ class HistoryManagerTest {
     void addSomeTasksDoubleTime() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task1 = new Task(1,"Task #1", "DT", Status.NEW,startTime1, Duration.ofMinutes(9));
         Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -61,9 +62,9 @@ class HistoryManagerTest {
     void removeFirstElement() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
         Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -78,9 +79,9 @@ class HistoryManagerTest {
     void removeLastElement() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task1 = new Task(1,"Task #1", "DT", Status.NEW,startTime1, Duration.ofMinutes(9));
         Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW,2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -95,9 +96,9 @@ class HistoryManagerTest {
     void removeMiddleElement() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
         Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -112,9 +113,9 @@ class HistoryManagerTest {
     void getHistory() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
+        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
         Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);

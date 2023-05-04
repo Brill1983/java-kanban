@@ -144,8 +144,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         Task task;
         switch (type) {
             case TASK:
-                task = new Task(id, columns[2], columns[4], LocalDateTime.parse(columns[6]), Duration.parse(columns[7]));
-                task.setStatus(status);
+                task = new Task(id, columns[2], columns[4], Status.valueOf(columns[3]), LocalDateTime.parse(columns[6]), Duration.parse(columns[7]));
                 break;
 
             case EPIC:
@@ -164,8 +163,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 break;
 
             case SUBTASK:
-                task = new SubTask(id, columns[2], columns[4], Integer.parseInt(columns[5]), LocalDateTime.parse(columns[6]), Duration.parse(columns[7]));
-                task.setStatus(status);
+                task = new SubTask(id, columns[2], columns[4], Status.valueOf(columns[3]), Integer.parseInt(columns[5]), LocalDateTime.parse(columns[6]), Duration.parse(columns[7]));
                 break;
 
             default:
@@ -196,8 +194,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     @Override
-    public void updateTask(Task task, Status status) {
-        super.updateTask(task, status);
+    public void updateTask(Task task) {
+        super.updateTask(task);
         save();
     }
 
@@ -208,8 +206,8 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
     }
 
     @Override
-    public void updateSubTask(SubTask subTask, Status status) {
-        super.updateSubTask(subTask, status);
+    public void updateSubTask(SubTask subTask) {
+        super.updateSubTask(subTask);
         save();
     }
 

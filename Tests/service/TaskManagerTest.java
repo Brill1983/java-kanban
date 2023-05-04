@@ -22,8 +22,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void getAllTasks() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
-        Task task2 = new Task("New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task("New Task", "New DT", Status.NEW, startTime2, Duration.ofMinutes(5));
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         List<Task> taskList = taskManager.getAllTasks();
@@ -61,8 +61,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         taskManager.createEpic(new Epic("Epic #1", "DT"));
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask1 = new SubTask("Subtask #1", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask2 = new SubTask("Subtask #1", "DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask1 = new SubTask("Subtask #1", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("Subtask #1", "DT", Status.NEW, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
         List<SubTask> subTaskList = taskManager.getAllSubTasks();
@@ -80,7 +80,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void createTask() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        Task task = new Task("Task #1", "DT", Status.NEW, startTime, Duration.ofMinutes(9));
         Task result = taskManager.createTask(task);
         assertNotNull(result, "Task create failure");
         assertTrue(result.getId() > 0, "ID counts failure");
@@ -117,7 +117,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void createSubTaskWhenEpicExists() {
         taskManager.createEpic(new Epic("Epic #1", "DT"));
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        SubTask subTask = new SubTask("Subtask #1", "DT", 1, startTime, Duration.ofMinutes(9));
+        SubTask subTask = new SubTask("Subtask #1", "DT", Status.NEW, 1, startTime, Duration.ofMinutes(9));
         SubTask result = taskManager.createSubTask(subTask);
         assertNotNull(result, "Subtask create failure");
         assertTrue(result.getId() > 0, "ID counts failure");
@@ -140,13 +140,13 @@ abstract class TaskManagerTest <T extends TaskManager> {
         Epic epic = taskManager.createEpic(new Epic("Epic #1", "DT"));
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask2 = new SubTask("Subtask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask3 = new SubTask("Subtask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask2 = new SubTask("Subtask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("Subtask #3", "DT", Status.NEW, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
         assertEquals(startTime1, epic.getStartTime(), "Epic should starts with first sub task start");
         assertEquals(startTime2.plus(Duration.ofMinutes(5)), epic.getEndTime(), "Epic should ends with last sub task end");
-        assertEquals(Duration.ofMinutes(15), epic.getDuration(), "Duration of Epic should be from start of first subtask till end of las sub task");
+        assertEquals(Duration.ofMinutes(14), epic.getDuration(), "Duration of Epic should be from start of first subtask till end of las sub task");
     }
 
     @Test
@@ -154,8 +154,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         Epic epic = taskManager.createEpic(new Epic("Epic #1", "DT"));
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask2 = new SubTask("Subtask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask3 = new SubTask("Subtask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask2 = new SubTask("Subtask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("Subtask #3", "DT", Status.NEW, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
         assertEquals(2, epic.getSubTasks().size(), "Some Subtasks doesn't write in epic list");
@@ -166,7 +166,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void createSubTaskWhenNoEpic() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        SubTask subTask = new SubTask("Subtask #1", "DT", 1, startTime, Duration.ofMinutes(9));
+        SubTask subTask = new SubTask("Subtask #1", "DT", Status.NEW, 1, startTime, Duration.ofMinutes(9));
         SubTask result = taskManager.createSubTask(subTask);
         assertNull(result, "Subtask without epic should return null");
     }
@@ -174,7 +174,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void getTaskById() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        Task task = new Task("Task #1", "DT", Status.NEW, startTime, Duration.ofMinutes(9));
         taskManager.createTask(task);
         assertEquals(task, taskManager.getTaskById(1),"Index in storage is incorrect");
         assertNull(taskManager.getTaskById(0), "No such task index in storage - result should be Null");
@@ -192,7 +192,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void getSubTaskById() {
         taskManager.createEpic(new Epic("Epic #1", "DT"));
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        SubTask subTask = new SubTask("Subtask #1", "DT", 1, startTime, Duration.ofMinutes(9));
+        SubTask subTask = new SubTask("Subtask #1", "DT", Status.NEW, 1, startTime, Duration.ofMinutes(9));
         taskManager.createSubTask(subTask);
         assertEquals(subTask, taskManager.getSubTaskById(2),"Index in storage is incorrect");
         assertNull(taskManager.getSubTaskById(3), "No such task index in storage - result should be Null");
@@ -202,10 +202,10 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void updateTaskWithIncomingTaskWithNewStatusAndNewTimeAndNewDuration() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
-        Task task2 = new Task(1,"New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task(1,"New Task", "New DT", Status.IN_PROGRESS, startTime2, Duration.ofMinutes(5));
         taskManager.createTask(task1);
-        taskManager.updateTask(task2, Status.IN_PROGRESS);
+        taskManager.updateTask(task2);
         assertEquals("New Task", taskManager.getTaskById(1).getName(), "Task name changed incorrectly");
         assertEquals("New DT", taskManager.getTaskById(1).getDescription(), "Task description changed incorrectly");
         assertEquals(startTime2, taskManager.getTaskById(1).getStartTime(), "Task start time changed incorrectly");
@@ -216,8 +216,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void updateTaskInEmptyHashMap() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        Task task1 = new Task(1,"Task #1", "DT", startTime1, Duration.ofMinutes(9));
-        taskManager.updateTask(task1, Status.IN_PROGRESS);
+        Task task = new Task(1,"Task #1", "DT", Status.IN_PROGRESS, startTime1, Duration.ofMinutes(9));
+        taskManager.updateTask(task);
         assertEquals(0, taskManager.getAllTasks().size(), "Should be no changes in storage");
     }
 
@@ -225,19 +225,19 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void updateTaskWithIncomingTaskWithNullStatus() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
-        Task task2 = new Task(1,"New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task(1,"New Task", "New DT", null, startTime2, Duration.ofMinutes(5));
         taskManager.createTask(task1);
-        taskManager.updateTask(task2, null);
+        taskManager.updateTask(task2);
         assertEquals(Status.NEW, taskManager.getTaskById(1).getStatus(), "Task status changed incorrectly");
     }
 
     @Test
     void updateTaskWithNull() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        Task task = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        Task task = new Task("Task #1", "DT", Status.NEW, startTime, Duration.ofMinutes(9));
         taskManager.createTask(task);
-        taskManager.updateTask(null, Status.IN_PROGRESS);
+        taskManager.updateTask(null);
         assertEquals(task, taskManager.getTaskById(1), "If incoming is Null, task shouldn't change");
     }
 
@@ -245,10 +245,10 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void updateTaskWithWrongId() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
-        Task task2 = new Task(2,"New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task(2,"New Task", "New DT", Status.IN_PROGRESS, startTime2, Duration.ofMinutes(5));
         taskManager.createTask(task1);
-        taskManager.updateTask(task2, Status.IN_PROGRESS);
+        taskManager.updateTask(task2);
         assertEquals(task1, taskManager.getTaskById(1), "Task should not change");
         assertNull(taskManager.getTaskById(2), "Second task should not be written");
     }
@@ -296,11 +296,11 @@ abstract class TaskManagerTest <T extends TaskManager> {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
         Epic epic1 = new Epic("Epic #1", "DT");
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask3 = new SubTask(2,"New SubTask", "New DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(2,"New SubTask", "New DT", Status.IN_PROGRESS, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
-        taskManager.updateSubTask(subTask3, Status.IN_PROGRESS);
+        taskManager.updateSubTask(subTask3);
         assertEquals("New SubTask", taskManager.getSubTaskById(2).getName(), "Sub task name changed incorrectly");
         assertEquals("New DT", taskManager.getSubTaskById(2).getDescription(), "Sub task description changed incorrectly");
         assertEquals(startTime2, taskManager.getSubTaskById(2).getStartTime(), "Sub task start time changed incorrectly");
@@ -311,8 +311,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void updateSubTaskInEmptyHashMap() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        SubTask subTask = new SubTask(1,"SubTask #1", "DT",1, startTime1, Duration.ofMinutes(9));
-        taskManager.updateTask(subTask, Status.IN_PROGRESS);
+        SubTask subTask = new SubTask(1,"SubTask #1", "DT", Status.IN_PROGRESS, 1, startTime1, Duration.ofMinutes(9));
+        taskManager.updateTask(subTask);
         assertEquals(0, taskManager.getAllSubTasks().size(), "Should be no changes in storage");
     }
 
@@ -320,10 +320,10 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void updateSubTaskWithNull() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
         Epic epic1 = new Epic("Epic #1", "DT");
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime, Duration.ofMinutes(9));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
-        taskManager.updateSubTask(null, Status.IN_PROGRESS);
+        taskManager.updateSubTask(null);
         assertEquals(subTask2, taskManager.getSubTaskById(2), "If incoming is Null, sub task shouldn't change");
     }
 
@@ -332,11 +332,11 @@ abstract class TaskManagerTest <T extends TaskManager> {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
         Epic epic1 = new Epic("Epic #1", "DT");
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask3 = new SubTask(3,"New SubTask", "New DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask(3,"New SubTask", "New DT", Status.IN_PROGRESS, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
-        taskManager.updateSubTask(subTask3, Status.IN_PROGRESS);
+        taskManager.updateSubTask(subTask3);
         assertEquals(subTask2, taskManager.getSubTaskById(2), "Sub task should not change");
         assertNull(taskManager.getSubTaskById(3), "Second sub task should not be written");
     }
@@ -344,7 +344,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void deleteTaskById() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        Task task1 = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime, Duration.ofMinutes(9));
         taskManager.createTask(task1);
         taskManager.deleteTaskById(1);
         assertNull(taskManager.getTaskById(1), "Should be null after delete");
@@ -360,7 +360,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     @Test
     void deleteTaskByWrongId() {
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        Task task1 = new Task("Task #1", "DT", startTime, Duration.ofMinutes(9));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime, Duration.ofMinutes(9));
         taskManager.createTask(task1);
         taskManager.deleteTaskById(2);
         assertNull(taskManager.getTaskById(2), "Should be null if no index to delete");
@@ -395,7 +395,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void deleteSubTaskById() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         Epic epic1 = new Epic("Epic #1", "DT");
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
         taskManager.deleteSubTaskById(2);
@@ -414,7 +414,7 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void deleteSubTaskWithWrongId() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         Epic epic1 = new Epic("Epic #1", "DT");
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
         taskManager.deleteSubTaskById(3);
@@ -426,8 +426,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void deleteAllTasks() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        Task task1 = new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9));
-        Task task2 = new Task("New Task", "New DT", startTime2, Duration.ofMinutes(5));
+        Task task1 = new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Task task2 = new Task("New Task", "New DT", Status.NEW, startTime2, Duration.ofMinutes(5));
         taskManager.createTask(task1);
         taskManager.createTask(task2);
         taskManager.deleteAllTasks();
@@ -442,8 +442,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         Epic epic2 = new Epic("Epic #2", "New DT");
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask3 = new SubTask("SubTask #3", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask4 = new SubTask("SubTask #4", "DT", 2, startTime2, Duration.ofMinutes(5));
+        SubTask subTask3 = new SubTask("SubTask #3", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask4 = new SubTask("SubTask #4", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(5));
         taskManager.createEpic(epic1);
         taskManager.createEpic(epic2);
         taskManager.createSubTask(subTask3);
@@ -461,8 +461,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void deleteAllSubTasks() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask1 = new SubTask("SubTask #3", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask2 = new SubTask("SubTask #4", "DT", 2, startTime2, Duration.ofMinutes(5));
+        SubTask subTask1 = new SubTask("SubTask #3", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask2 = new SubTask("SubTask #4", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(5));
         taskManager.createSubTask(subTask1);
         taskManager.createSubTask(subTask2);
         taskManager.deleteAllEpics();
@@ -476,8 +476,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         Epic epic1 = new Epic("Epic #1", "DT");
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask3 = new SubTask("SubTask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("SubTask #3", "DT", Status.NEW, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
@@ -505,8 +505,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         Epic epic4 = new Epic(4, "Epic #4", "DT");
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
-        SubTask subTask2 = new SubTask("SubTask #2", "DT", 1, startTime1, Duration.ofMinutes(9));
-        SubTask subTask3 = new SubTask("SubTask #3", "DT", 1, startTime2, Duration.ofMinutes(5));
+        SubTask subTask2 = new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime1, Duration.ofMinutes(9));
+        SubTask subTask3 = new SubTask("SubTask #3", "DT", Status.NEW, 1, startTime2, Duration.ofMinutes(5));
         taskManager.createEpic(epic1);
         taskManager.createSubTask(subTask2);
         taskManager.createSubTask(subTask3);
@@ -517,9 +517,9 @@ abstract class TaskManagerTest <T extends TaskManager> {
     void getHistory() {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = taskManager.createTask(new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9)));
+        Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
         Epic epic2 = taskManager.createEpic(new Epic("Epic #2", "DT"));
-        SubTask subTask3 = taskManager.createSubTask(new SubTask("SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9)));
+        SubTask subTask3 = taskManager.createSubTask(new SubTask("SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9)));
         taskManager.getTaskById(1);
         taskManager.getEpicById(2);
         taskManager.getSubTaskById(3);
@@ -552,14 +552,14 @@ abstract class TaskManagerTest <T extends TaskManager> {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
         Epic epic1 = taskManager.createEpic(new Epic("Epic #1", "DT"));
-        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #2", "DT", 1, startTime2, Duration.ofMinutes(9)));
-        Task task3 = taskManager.createTask(new Task("Task #3", "DT", startTime1, Duration.ofMinutes(9)));
+        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #2", "DT", Status.NEW, 1, startTime2, Duration.ofMinutes(9)));
+        Task task3 = taskManager.createTask(new Task("Task #3", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
         List<Task> list1 = taskManager.getPrioritizedTasks();
         assertEquals(task3, list1.get(0), "Task #3 should be the first element of the list");
         assertEquals(subTask2, list1.get(1), "Sub Task #2 should be the second element of the list");
 
         LocalDateTime startTime3 = LocalDateTime.of(2023, 05, 8, 00, 20);
-        SubTask subTask4 = taskManager.createSubTask(new SubTask("SubTask #4", "DT", 1, startTime3, Duration.ofMinutes(9)));
+        SubTask subTask4 = taskManager.createSubTask(new SubTask("SubTask #4", "DT", Status.NEW, 1, startTime3, Duration.ofMinutes(9)));
         List<Task> list2 = taskManager.getPrioritizedTasks();
         assertEquals(subTask4, list2.get(0), "Sub task #4 should be the fist element of the list");
         assertEquals(task3, list2.get(1), "Task #3 should be the second element of the list");
