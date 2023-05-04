@@ -4,7 +4,6 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -18,11 +17,6 @@ abstract class TaskManagerTest <T extends TaskManager> {
     protected T taskManager;
 
     abstract void init();
-
-    @BeforeEach
-    void beforeEach() {
-        taskManager = (T) Managers.getDefault();
-    }
 
     @Test
     void getAllTasks() {
@@ -524,8 +518,8 @@ abstract class TaskManagerTest <T extends TaskManager> {
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
         Task task1 = taskManager.createTask(new Task("Task #1", "DT", startTime1, Duration.ofMinutes(9)));
-        Epic epic2 = taskManager.createEpic(new Epic("Epic #3", "DT"));
-        SubTask subTask3 = taskManager.createSubTask(new SubTask("SubTask #5", "DT", 2, startTime2, Duration.ofMinutes(9)));
+        Epic epic2 = taskManager.createEpic(new Epic("Epic #2", "DT"));
+        SubTask subTask3 = taskManager.createSubTask(new SubTask("SubTask #3", "DT", 2, startTime2, Duration.ofMinutes(9)));
         taskManager.getTaskById(1);
         taskManager.getEpicById(2);
         taskManager.getSubTaskById(3);
@@ -555,5 +549,20 @@ abstract class TaskManagerTest <T extends TaskManager> {
 
     @Test
     void getPrioritizedTasks() {
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
+        Epic epic1 = taskManager.createEpic(new Epic("Epic #1", "DT"));
+        SubTask subTask2 = taskManager.createSubTask(new SubTask("SubTask #2", "DT", 1, startTime2, Duration.ofMinutes(9)));
+        Task task3 = taskManager.createTask(new Task("Task #3", "DT", startTime1, Duration.ofMinutes(9)));
+        List<Task> list1 = taskManager.getPrioritizedTasks();
+        assertEquals(task3, list1.get(0), "Task #3 should be the first element of the list");
+        assertEquals(subTask2, list1.get(1), "Sub Task #2 should be the second element of the list");
+
+        LocalDateTime startTime3 = LocalDateTime.of(2023, 05, 8, 00, 20);
+        SubTask subTask4 = taskManager.createSubTask(new SubTask("SubTask #4", "DT", 1, startTime3, Duration.ofMinutes(9)));
+        List<Task> list2 = taskManager.getPrioritizedTasks();
+        assertEquals(subTask4, list2.get(0), "Sub task #4 should be the fist element of the list");
+        assertEquals(task3, list2.get(1), "Task #3 should be the second element of the list");
+        assertEquals(subTask2, list2.get(2), "Sub Task #2 should be the third element of the list");
     }
 }

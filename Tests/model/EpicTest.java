@@ -1,20 +1,14 @@
 package model;
 
-import model.Epic;
-import model.Status;
-import model.SubTask;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import service.Managers;
 import service.TaskManager;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
 
 import static model.Status.*;
-import static org.junit.jupiter.api.Assertions.*;
 
 public class EpicTest {
     TaskManager taskManager = Managers.getDefault();

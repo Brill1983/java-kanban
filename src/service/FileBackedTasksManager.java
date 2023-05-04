@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         this.path = path;
     }
 
-    private void save() { // D:\test.csv
+    private void save() {
         try (FileWriter fileRecord = new FileWriter(path.toString())){
             fileRecord.write(HEADER);
             for (Integer key: tasks.keySet()) {
@@ -64,6 +64,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 switch(task.getType()){
                     case TASK:
                         tasks.put(id, task);
+                        prioritizedTasks.add(task);
                         break;
 
                     case EPIC:
@@ -76,6 +77,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
                     case SUBTASK:
                         subTasks.put(id, (SubTask) task);
+                        prioritizedTasks.add(task);
                         Epic e = epics.get(subTasks.get(id).getEpic());
                         e.setSubTasks(createList(e));
                         break;
@@ -108,7 +110,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         seq = maxId;
     }
 
-    public static List<Integer> historyFromString(String value) {
+    private static List<Integer> historyFromString(String value) {
         String[] split = value.split(",");
         List<Integer> list = new ArrayList<>();
         for(int i = 0; i < split.length; i++) {
@@ -117,7 +119,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return list;
     }
 
-    public static String historyToString(HistoryManager historyManager) {
+    private static String historyToString(HistoryManager historyManager) {
         List<Task> list = historyManager.getHistory();
         String record = "";
         int counter = 0;
