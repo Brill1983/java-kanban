@@ -79,7 +79,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                         subTasks.put(id, (SubTask) task);
                         prioritizedTasks.add(task);
                         Epic e = epics.get(subTasks.get(id).getEpic());
-                        e.setSubTasks(createList(e));
+                        e.addSubTask(id);
                         break;
                 }
                 if (maxId < id) {

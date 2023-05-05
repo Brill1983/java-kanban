@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-    private List<SubTask> subTasks = new ArrayList<>();
+//    private List<SubTask> subTasks = new ArrayList<>();
+    private List<Integer> subTasks = new ArrayList<>();
+
     private LocalDateTime endTime;
 
     public Epic(String name, String description) {
@@ -26,12 +28,20 @@ public class Epic extends Task {
         this.endTime = endTime;
     }
 
-    public List<SubTask> getSubTasks() {
+    public List<Integer> getSubTasks() {
         return subTasks;
     }
 
-    public void setSubTasks(List<SubTask> subTasks) {
-        this.subTasks = subTasks;
+    public void addSubTask(Integer subTaskId) {
+        subTasks.add(subTaskId);
+    }
+
+    public void deleteSubTask(Integer subTaskId) {
+        subTasks.remove(subTaskId);
+    }
+
+    public void removeSubTasksList() {
+        subTasks.clear();
     }
 
     public TaskType getType() {
