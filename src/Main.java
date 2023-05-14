@@ -18,13 +18,11 @@ public class Main {
     public static void main(String[] args) {
        HttpTaskServer.create();
 
-//        TaskManager taskManager = Managers.getDefault(); // получаем объект через метод класса Managers
+
+//       TaskManager taskManager = Managers.getDefaultFileManager();
 //
 //        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
 //        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-//
-//        System.out.println("Create Tasks, Epics, SubTasks");
-//
 //        Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
 //        Task task2 = taskManager.createTask(new Task("Task #2", "DT", Status.NEW, startTime1.plusMinutes(50), Duration.ofMinutes(9)));
 //        Task task3 = taskManager.createTask(new Task("Task #3", "DT", Status.NEW, startTime1.plusMinutes(60), Duration.ofMinutes(9)));
@@ -35,6 +33,26 @@ public class Main {
 //        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.NEW,  6, startTime1.plusMinutes(10), Duration.ofMinutes(5)));
 //        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 6, startTime1.plusMinutes(30), Duration.ofMinutes(7)));
 //        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 6, startTime1.plusMinutes(20), Duration.ofMinutes(6)));
+//
+//        taskManager.getTaskById(2);
+//        taskManager.getTaskById(3);
+//        taskManager.getTaskById(1);
+//        taskManager.getTaskById(2);
+//        taskManager.getEpicById(4);
+//        taskManager.getEpicById(5);
+//        taskManager.getEpicById(6);
+//        taskManager.getSubTaskById(10);
+//        taskManager.getSubTaskById(7);
+//        taskManager.getSubTaskById(9);
+
+
+//        TaskManager taskManager = Managers.getDefault(); // получаем объект через метод класса Managers
+//
+//
+//
+//        System.out.println("Create Tasks, Epics, SubTasks");
+//
+//
 
 
 //        System.out.println("Update epic");
