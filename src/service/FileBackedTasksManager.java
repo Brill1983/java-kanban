@@ -56,6 +56,9 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
             reader.readLine();
             while (true) {
                 String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
                 if (line.isEmpty()) {
                     break;
                 }

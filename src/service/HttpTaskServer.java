@@ -49,7 +49,6 @@ public class HttpTaskServer {
 
     }
 
-
     private static class TaskHandler implements HttpHandler {
         TaskManager fileBackedTasksManager = FileBackedTasksManager.loadFromFile(Paths.get("test.csv").toFile());
         @Override
@@ -63,7 +62,7 @@ public class HttpTaskServer {
 
             String response = "Обрабатываем запрос от клиента";
 
-            switcher(choice, exchange, fileBackedTasksManager);
+            switcher(choice, exchange, body, fileBackedTasksManager);
 
             exchange.sendResponseHeaders(200, 0);
             try (OutputStream os = exchange.getResponseBody()) {
@@ -71,7 +70,7 @@ public class HttpTaskServer {
             }
         }
 
-        private void switcher(int choice, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+        private void switcher(int choice, HttpExchange exchange, String body, TaskManager fileBackedTasksManager) {
             switch (choice) {
                 case 1: outputAll(exchange, fileBackedTasksManager); break;
                 case 2: outputAllTasks(exchange, fileBackedTasksManager); break;
@@ -81,15 +80,15 @@ public class HttpTaskServer {
                 case 6: receiveTaskById(exchange, fileBackedTasksManager); break;
                 case 7: receiveEpicById(exchange, fileBackedTasksManager); break;
                 case 8: receiveSubTaskById(exchange, fileBackedTasksManager); break;
-                case 9: createNewTask(exchange, fileBackedTasksManager); break;
-                case 10: createNewEpic(exchange, fileBackedTasksManager); break;
-                case 11: createNewSubTask(exchange, fileBackedTasksManager); break;
-                case 12: changeTask(exchange, fileBackedTasksManager); break;
-                case 13: changeEpic(exchange, fileBackedTasksManager); break;
-                case 14: changeSubTask(exchange, fileBackedTasksManager); break;
+                case 9: createNewTask(body, exchange, fileBackedTasksManager); break;
+                case 10: createNewEpic(body, exchange, fileBackedTasksManager); break;
+                case 11: createNewSubTask(body, exchange, fileBackedTasksManager); break;
+                case 12: changeTask(body, exchange, fileBackedTasksManager); break;
+                case 13: changeEpic(body, exchange, fileBackedTasksManager); break;
+                case 14: changeSubTask(body, exchange, fileBackedTasksManager); break;
                 case 15: removeAll(exchange, fileBackedTasksManager); break;
                 case 16: removeAllTasks(exchange, fileBackedTasksManager); break;
-                case 17: removrAllEpics(exchange, fileBackedTasksManager); break;
+                case 17: removeAllEpics(exchange, fileBackedTasksManager); break;
                 case 18: removeAllSubTasks(exchange, fileBackedTasksManager); break;
                 case 19: removeTaskById(exchange, fileBackedTasksManager); break;
                 case 20: removeEpicById(exchange, fileBackedTasksManager); break;
@@ -99,85 +98,113 @@ public class HttpTaskServer {
 
         }
 
-        private void changeSubTask(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-            InputStream inputStream = exchange.getRequestBody();
+        private void receiveHistory(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            String stringJson = gson.toJson(fileBackedTasksManager.getHistory());
+            writeResponse(exchange, stringJson, 200);
+        }
+
+        private void removeSubTaskById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            String query = exchange.getRequestURI().getQuery();
+            String[] queryParts = query.split("=");
+            int id = Integer.parseInt(queryParts[1]);
+            fileBackedTasksManager.deleteSubTaskById(id);
+            writeResponse(exchange, "Сабтаск с ID " + id + "удалена", 200);
+        }
+
+        private void removeEpicById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            String query = exchange.getRequestURI().getQuery();
+            String[] queryParts = query.split("=");
+            int id = Integer.parseInt(queryParts[1]);
+            fileBackedTasksManager.deleteEpicById(id);
+            writeResponse(exchange, "Эпик с ID " + id + "удалена", 200);
+        }
+
+        private void removeTaskById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            String query = exchange.getRequestURI().getQuery();
+            String[] queryParts = query.split("=");
+            int id = Integer.parseInt(queryParts[1]);
+            fileBackedTasksManager.deleteTaskById(id);
+            writeResponse(exchange, "Задача с ID " + id + "удалена", 200);
+        }
+
+        private void removeAllSubTasks(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            fileBackedTasksManager.deleteAllSubTasks();
+            writeResponse(exchange, "Все подзадачи удалены", 200);
+        }
+
+        private void removeAllEpics(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            fileBackedTasksManager.deleteAllEpics();
+            writeResponse(exchange, "Все эпики удалены", 200);
+        }
+
+        private void removeAllTasks(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            fileBackedTasksManager.deleteAllTasks();
+            writeResponse(exchange, "Все задачи удалены", 200);
+        }
+
+        private void removeAll(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+            fileBackedTasksManager.deleteAllTasks();
+            fileBackedTasksManager.deleteAllSubTasks();
+            fileBackedTasksManager.deleteAllEpics();
+            writeResponse(exchange, "Все задачи, эпики и подзадачи удалены", 200);
+        }
+
+        private void changeSubTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
             try {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                 SubTask subtask = gson.fromJson(body, SubTask.class);
                 fileBackedTasksManager.updateSubTask(subtask);
-                writeResponse(exchange, "Подзадача изменена", 201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                writeResponse(exchange, "Подзадача изменена", 200);
             } catch (JsonSyntaxException e) {
                 writeResponse(exchange, "Получен некорреткный JSON", 400);
             }
         }
 
-        private void changeEpic(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-            InputStream inputStream = exchange.getRequestBody();
+        private void changeEpic(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
             try {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                 Epic epic = gson.fromJson(body, Epic.class);
                 fileBackedTasksManager.updateEpic(epic);
-                writeResponse(exchange, "Эпик изменен", 201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                writeResponse(exchange, "Эпик изменен", 200);
             } catch (JsonSyntaxException e) {
                 writeResponse(exchange, "Получен некорреткный JSON", 400);
             }
         }
 
-        private void changeTask(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-            InputStream inputStream = exchange.getRequestBody();
+        private void changeTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
             try {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                 Task task = gson.fromJson(body, Task.class);
                 fileBackedTasksManager.updateTask(task);
-                writeResponse(exchange, "Задача изменена", 201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                writeResponse(exchange, "Задача изменена", 200);
             } catch (JsonSyntaxException e) {
                 writeResponse(exchange, "Получен некорреткный JSON", 400);
             }
         }
 
-        private void createNewSubTask(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-            InputStream inputStream = exchange.getRequestBody();
+        private void createNewSubTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
             try {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                 SubTask subtask = gson.fromJson(body, SubTask.class);
-                fileBackedTasksManager.createTask(subtask);
-                writeResponse(exchange, "Подзадача добалена", 201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                fileBackedTasksManager.createSubTask(subtask);
+                writeResponse(exchange, "Подзадача добалена", 201); // Что возвращать? Отклик или задачу из мапы?
             } catch (JsonSyntaxException e) {
                 writeResponse(exchange, "Получен некорреткный JSON", 400);
             }
         }
 
-        private void createNewEpic(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-            InputStream inputStream = exchange.getRequestBody();
+        private void createNewEpic(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
             try {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
                 Epic epic = gson.fromJson(body, Epic.class);
                 fileBackedTasksManager.createEpic(epic);
-                writeResponse(exchange, "Эпик добален", 201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                writeResponse(exchange, "Эпик добален", 201); // Что возвращать? Отклик или задачу из мапы?
             } catch (JsonSyntaxException e) {
                 writeResponse(exchange, "Получен некорреткный JSON", 400);
             }
         }
 
-        private void createNewTask(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-            InputStream inputStream = exchange.getRequestBody();
+        private void createNewTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
             try {
-                String body = new String(inputStream.readAllBytes(), DEFAULT_CHARSET);
+                System.out.println("Тело запроса: " + body);
                 Task task = gson.fromJson(body, Task.class);
                 fileBackedTasksManager.createTask(task);
-                writeResponse(exchange, "Задача добалена", 201);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+                writeResponse(exchange, "Задача добалена", 201); // Что возвращать? Отклик или задачу из мапы?
             } catch (JsonSyntaxException e) {
                 writeResponse(exchange, "Получен некорреткный JSON", 400);
             }
@@ -231,10 +258,10 @@ public class HttpTaskServer {
             String[] pathParts = path.split("/");
             if (method.equals("GET")) {
                 if (pathParts.length == 2) return 1;
-                else if (pathParts.length == 3 && query.isEmpty()) {
+                else if (pathParts.length == 3 && query == null) {
                     if (pathParts[2].equals("task")) return 2; // получаем список тасков
                     else if (pathParts[2].equals("epic")) return 3; // получаем список эпиков
-                    else if (pathParts[2].equals("subTask")) return 4; // получаем список сабтасков
+                    else if (pathParts[2].equals("subtask")) return 4; // получаем список сабтасков
                     else if (pathParts[2].equals("history")) return 22; // получаем историю
                     else return 5; // обшибка - неправильный запрос
                 } else if (pathParts.length == 3) {
@@ -245,7 +272,7 @@ public class HttpTaskServer {
                         Integer.parseInt(queryParts[1]); // проверяем, что второе значение параметра запроса - число.
                         if (pathParts[2].equals("task")) return 6; // получаем таску по ID
                         else if (pathParts[2].equals("epic")) return 7; // получаем эпик по ID
-                        else if (pathParts[2].equals("subTask")) return 8; // получаем сабтаску по ID
+                        else if (pathParts[2].equals("subtask")) return 8; // получаем сабтаску по ID
                         else return 5;// обшибка - неправильный запрос
                     } catch (NumberFormatException e) {
                         return 5; // обшибка - неправильный запрос
@@ -253,10 +280,10 @@ public class HttpTaskServer {
                 } else return 5;
             } else if (method.equals("POST")) {
                 if (body.isBlank()) return 5; // обшибка - неправильный запрос
-                if (pathParts.length == 3 && query.isEmpty()) {
+                if (pathParts.length == 3 && query == null) {
                     if (pathParts[2].equals("task")) return 9; // создаем таску
                     else if (pathParts[2].equals("epic")) return 10; // создаем эпик
-                    else if (pathParts[2].equals("subTask")) return 11; // создаем сабтаску
+                    else if (pathParts[2].equals("subtask")) return 11; // создаем сабтаску
                     else return 5; // обшибка - неправильный запрос
                 } else if (pathParts.length == 3) {
                     String[] queryParts = query.split("=");
@@ -266,7 +293,7 @@ public class HttpTaskServer {
                         Integer.parseInt(queryParts[1]); // проверяем, что второе значение параметра запроса - число.
                         if (pathParts[2].equals("task")) return 12; // изменяем таску по ID
                         else if (pathParts[2].equals("epic")) return 13; // изменяем эпик по ID
-                        else if (pathParts[2].equals("subTask")) return 14; // изменяем сабтаску по ID
+                        else if (pathParts[2].equals("subtask")) return 14; // изменяем сабтаску по ID
                         else return 5;// обшибка - неправильный запрос
                     } catch (NumberFormatException e) {
                         return 5; // обшибка - неправильный запрос
@@ -274,10 +301,10 @@ public class HttpTaskServer {
                 } else return 5;
             } else if (method.equals("DELETE")) {
                 if (pathParts.length == 2) return 15; // удалить все эпики, таски, сабтаски
-                else if (pathParts.length == 3 && query.isEmpty()) {
+                else if (pathParts.length == 3 && query == null) {
                     if (pathParts[2].equals("task")) return 16; // удаление всех тасков
                     else if (pathParts[2].equals("epic")) return 17; // удаление всех эпиков
-                    else if (pathParts[2].equals("subTask")) return 18; // удаление всех сабтасков
+                    else if (pathParts[2].equals("subtask")) return 18; // удаление всех сабтасков
                     else return 5; // обшибка - неправильный запрос
                 } else if (pathParts.length == 3) {
                     String[] queryParts = query.split("=");
@@ -287,7 +314,7 @@ public class HttpTaskServer {
                         Integer.parseInt(queryParts[1]); // проверяем, что второе значение параметра запроса - число.
                         if (pathParts[2].equals("task")) return 19; // удаляем таску по ID
                         else if (pathParts[2].equals("epic")) return 20; // удаление всех эпик по ID
-                        else if (pathParts[2].equals("subTask")) return 21; // удаление всех сабтаску по ID
+                        else if (pathParts[2].equals("subtask")) return 21; // удаление всех сабтаску по ID
                         else return 5;// обшибка - неправильный запрос
                     } catch (NumberFormatException e) {
                         return 5; // обшибка - неправильный запрос
