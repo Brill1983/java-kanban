@@ -22,7 +22,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         this.path = path;
     }
 
-    private void save() {
+    public void save() {
         try (FileWriter fileRecord = new FileWriter(path.toString())){
             fileRecord.write(HEADER);
             for (Integer key: tasks.keySet()) {

@@ -2,21 +2,46 @@ import model.Epic;
 import model.Status;
 import model.SubTask;
 import model.Task;
-import service.FileBackedTasksManager;
-import service.HttpTaskServer;
-import service.Managers;
+import server.HttpTaskServer;
+import server.KVServer;
+import service.HttpTaskManager;
+import service.KVTaskClient;
 import service.TaskManager;
 
-import java.io.File;
-import java.nio.file.Paths;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.List;
+
+//public class Main {
+//    public static void main(String[] args) throws IOException {
+//        new KVServer().start();
+//    }
+//}
 
 public class Main {
 
-    public static void main(String[] args) {
-       HttpTaskServer.create();
+    public static void main(String[] args) throws IOException {
+//        HttpTaskServer server = new HttpTaskServer();
+//        server.createServer();
+
+        KVServer kvServer= new KVServer();
+        kvServer.start();
+        KVTaskClient client = new KVTaskClient("http://localhost:8078");
+
+        TaskManager taskManager = new HttpTaskManager("http://localhost:8078");
+        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
+        Task task2 = taskManager.createTask(new Task("Task #2", "DT", Status.NEW, startTime1.plusMinutes(50), Duration.ofMinutes(9)));
+        Task task3 = taskManager.createTask(new Task("Task #3", "DT", Status.NEW, startTime1.plusMinutes(60), Duration.ofMinutes(9)));
+        Epic epic4 = taskManager.createEpic(new Epic("Epic #4", "DE"));
+        Epic epic5 = taskManager.createEpic(new Epic("Epic #5", "DE"));
+        Epic epic6 = taskManager.createEpic(new Epic("Epic #6", "DE"));
+        SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", Status.NEW, 5, startTime1.minusMinutes(10), Duration.ofMinutes(9)));
+        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.NEW,  6, startTime1.plusMinutes(10), Duration.ofMinutes(5)));
+        SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 6, startTime1.plusMinutes(30), Duration.ofMinutes(7)));
+        SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 6, startTime1.plusMinutes(20), Duration.ofMinutes(6)));
+    }
 
 
 //       TaskManager taskManager = Managers.getDefaultFileManager();
@@ -146,6 +171,6 @@ public class Main {
 //        }
 
 
-
-    }
+//
+//    }
 }
