@@ -6,29 +6,24 @@ import server.HttpTaskServer;
 import server.KVServer;
 import service.HttpTaskManager;
 import service.KVTaskClient;
+import service.Managers;
 import service.TaskManager;
 
 import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
-//public class Main {
-//    public static void main(String[] args) throws IOException {
-//        new KVServer().start();
-//    }
-//}
-
 public class Main {
 
     public static void main(String[] args) throws IOException {
-//        HttpTaskServer server = new HttpTaskServer();
-//        server.createServer();
+
+//        TaskManager manager = Managers.getDefault1();
 
         KVServer kvServer= new KVServer();
         kvServer.start();
-        KVTaskClient client = new KVTaskClient("http://localhost:8078");
+//        KVTaskClient client = new KVTaskClient("http://localhost:8078");
 
-        TaskManager taskManager = new HttpTaskManager("http://localhost:8078");
+        TaskManager taskManager = Managers.getDefault();
         LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
         LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
         Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
@@ -41,6 +36,21 @@ public class Main {
         SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.NEW,  6, startTime1.plusMinutes(10), Duration.ofMinutes(5)));
         SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 6, startTime1.plusMinutes(30), Duration.ofMinutes(7)));
         SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 6, startTime1.plusMinutes(20), Duration.ofMinutes(6)));
+
+        taskManager.getTaskById(2);
+        taskManager.getTaskById(3);
+        taskManager.getTaskById(1);
+        taskManager.getTaskById(2);
+        taskManager.getEpicById(4);
+        taskManager.getEpicById(5);
+        taskManager.getEpicById(6);
+        taskManager.getSubTaskById(10);
+        taskManager.getSubTaskById(7);
+        taskManager.getSubTaskById(9);
+
+        TaskManager manager2 = Managers.getDefault();
+        System.out.println();
+        System.out.println(manager2.getHistory());
     }
 
 

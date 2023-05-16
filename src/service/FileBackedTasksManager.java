@@ -22,6 +22,14 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         this.path = path;
     }
 
+    public FileBackedTasksManager() {
+        super(null);
+    }
+
+    public FileBackedTasksManager(HistoryManager historyManager) {
+        super(historyManager);
+    }
+
     public void save() {
         try (FileWriter fileRecord = new FileWriter(path.toString())){
             fileRecord.write(HEADER);
@@ -50,7 +58,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         return fileManager;
     }
 
-    private void load() {
+    public void load() {
         int maxId = 0;
         try (BufferedReader reader =new BufferedReader(new FileReader(path.toString()))) {
             reader.readLine();
