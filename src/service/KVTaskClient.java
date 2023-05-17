@@ -7,9 +7,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 
 public class KVTaskClient {
-    
+
     private final String url;
     private final String apiToken;
+    private static final String HEADER_NAME = "Accept";
+    private static final String HEADER_VALUE = "application/json";
     HttpClient client = HttpClient.newHttpClient();
 
     public KVTaskClient(String url) {
@@ -33,7 +35,7 @@ public class KVTaskClient {
         String registerUrl = url + "/save/" + key + "?API_TOKEN=" + apiToken;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(registerUrl))
-                .header("Accept", "application/json")
+                .header(HEADER_NAME, HEADER_VALUE)
                 .POST(HttpRequest.BodyPublishers.ofString(json))
                 .build();
         try {
@@ -51,7 +53,7 @@ public class KVTaskClient {
         String registerUrl = url + "/load/" + key + "?API_TOKEN=" + apiToken;
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(registerUrl))
-                .header("Accept", "application/json")
+                .header(HEADER_NAME, HEADER_VALUE)
                 .GET()
                 .build();
         try {

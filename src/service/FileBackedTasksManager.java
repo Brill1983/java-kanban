@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager{
+public class FileBackedTasksManager extends InMemoryTaskManager implements TaskManager {
 
     protected Path path;
 
@@ -22,25 +22,21 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
         this.path = path;
     }
 
-    public FileBackedTasksManager() {
-        super(null);
-    }
-
     public FileBackedTasksManager(HistoryManager historyManager) {
         super(historyManager);
     }
 
     public void save() {
-        try (FileWriter fileRecord = new FileWriter(path.toString())){
+        try (FileWriter fileRecord = new FileWriter(path.toString())) {
             fileRecord.write(HEADER);
-            for (Integer key: tasks.keySet()) {
+            for (Integer key : tasks.keySet()) {
                 fileRecord.write(tasks.get(key).toString() + "\n");
             }
-            for (Integer key: epics.keySet()) {
-                fileRecord.write(epics.get(key).toString()+ "\n");
+            for (Integer key : epics.keySet()) {
+                fileRecord.write(epics.get(key).toString() + "\n");
             }
-            for (Integer key: subTasks.keySet()) {
-                fileRecord.write(subTasks.get(key).toString()+ "\n");
+            for (Integer key : subTasks.keySet()) {
+                fileRecord.write(subTasks.get(key).toString() + "\n");
             }
             fileRecord.write("\n");
             if (!historyManager.getHistory().isEmpty()) {
@@ -60,7 +56,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     public void load() {
         int maxId = 0;
-        try (BufferedReader reader =new BufferedReader(new FileReader(path.toString()))) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(path.toString()))) {
             reader.readLine();
             while (true) {
                 String line = reader.readLine();
@@ -72,7 +68,7 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                 }
                 Task task = fromString(line);
                 int id = task.getId();
-                switch(task.getType()){
+                switch (task.getType()) {
                     case TASK:
                         tasks.put(id, task);
                         prioritizedTasks.add(task);
@@ -113,18 +109,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
                     }
                 }
             }
-            } catch(FileNotFoundException e) {
-                throw new RuntimeException("Ошибка! Файл не найден!", e);
-            } catch(IOException e) {
-                throw new ManagerSaveException("Произошла ошибка чтения из файла, возможно файл поврежден", e);
-            }
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException("Ошибка! Файл не найден!", e);
+        } catch (IOException e) {
+            throw new ManagerSaveException("Произошла ошибка чтения из файла, возможно файл поврежден", e);
+        }
         seq = maxId;
     }
 
     private static List<Integer> historyFromString(String value) {
         String[] split = value.split(",");
         List<Integer> list = new ArrayList<>();
-        for(int i = 0; i < split.length; i++) {
+        for (int i = 0; i < split.length; i++) {
             list.add(Integer.valueOf(split[i]));
         }
         return list;
@@ -132,17 +128,18 @@ public class FileBackedTasksManager extends InMemoryTaskManager implements TaskM
 
     private static String historyToString(HistoryManager historyManager) {
         List<Task> list = historyManager.getHistory();
-        String record = "";
         int counter = 0;
-        for (Task task: list) {
-            if(counter < list.size() - 1) {
-                record = record + task.getId() + ",";
+        StringBuilder builder = new StringBuilder();
+        for (Task task : list) {
+            if (counter < list.size() - 1) {
+                builder.append(task.getId());
+                builder.append(",");
             } else {
-                record = record + task.getId();
+                builder.append(task.getId());
             }
-            counter ++;
+            counter++;
         }
-        return record;
+        return builder.toString();
     }
 
     private Task fromString(String value) {

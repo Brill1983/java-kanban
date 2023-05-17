@@ -209,7 +209,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteTaskById(int id) {
-        if(!tasks.containsKey(id)) {
+        if (!tasks.containsKey(id)) {
             System.out.println("No such id in tasks map");
             return;
         }
@@ -220,7 +220,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteEpicById(int id) {
-        if(!epics.containsKey(id)) {
+        if (!epics.containsKey(id)) {
             System.out.println("No such id in epic map");
             return;
         }
@@ -252,7 +252,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllTasks() {
-        for(Task task: tasks.values()){
+        for (Task task : tasks.values()) {
             prioritizedTasks.remove(task);
             historyManager.remove(task.getId());
         }
@@ -261,10 +261,10 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllEpics() {
-        for(Epic epic: epics.values()){
+        for (Epic epic : epics.values()) {
             historyManager.remove(epic.getId());
         }
-        for(SubTask subTask: subTasks.values()){
+        for (SubTask subTask : subTasks.values()) {
             historyManager.remove(subTask.getId());
         }
         epics.clear();
@@ -273,7 +273,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void deleteAllSubTasks() {
-        for(Task subTask: subTasks.values()){
+        for (Task subTask : subTasks.values()) {
             prioritizedTasks.remove(subTask);
             historyManager.remove(subTask.getId());
         }
@@ -303,7 +303,7 @@ public class InMemoryTaskManager implements TaskManager {
         return list;
     }
 
-    private Status calculateStatus (Epic epic) {
+    private Status calculateStatus(Epic epic) {
         List<Integer> subTaskList = epic.getSubTasks();
         if (subTaskList.isEmpty()) {
             return Status.NEW;
@@ -368,7 +368,7 @@ public class InMemoryTaskManager implements TaskManager {
         }
     }
 
-    private boolean valid (Task task) {
+    private boolean valid(Task task) {
         if (prioritizedTasks.isEmpty()) {
             return true;
         }

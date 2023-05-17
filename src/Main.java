@@ -4,12 +4,11 @@ import model.SubTask;
 import model.Task;
 import server.HttpTaskServer;
 import server.KVServer;
-import service.HttpTaskManager;
-import service.KVTaskClient;
-import service.Managers;
-import service.TaskManager;
+import service.*;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -18,14 +17,15 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
 //        TaskManager manager = Managers.getDefault1();
-
-        KVServer kvServer= new KVServer();
-        kvServer.start();
+//
+//        KVServer kvServer= new KVServer();
+//        kvServer.start();
 //        KVTaskClient client = new KVTaskClient("http://localhost:8078");
 
-        TaskManager taskManager = Managers.getDefault();
-        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+//        TaskManager taskManager = Managers.getDefault();
+        TaskManager taskManager = new FileBackedTasksManager(Managers.getDefaultHistory(), Paths.get("test.scv"));
+        LocalDateTime startTime = LocalDateTime.of(2023, 5, 8, 1, 0);
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
         Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
         Task task2 = taskManager.createTask(new Task("Task #2", "DT", Status.NEW, startTime1.plusMinutes(50), Duration.ofMinutes(9)));
         Task task3 = taskManager.createTask(new Task("Task #3", "DT", Status.NEW, startTime1.plusMinutes(60), Duration.ofMinutes(9)));
@@ -33,7 +33,7 @@ public class Main {
         Epic epic5 = taskManager.createEpic(new Epic("Epic #5", "DE"));
         Epic epic6 = taskManager.createEpic(new Epic("Epic #6", "DE"));
         SubTask subTask7 = taskManager.createSubTask(new SubTask("SubTask #7", "DS", Status.NEW, 5, startTime1.minusMinutes(10), Duration.ofMinutes(9)));
-        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.NEW,  6, startTime1.plusMinutes(10), Duration.ofMinutes(5)));
+        SubTask subTask8 = taskManager.createSubTask(new SubTask("SubTask #8", "DS", Status.NEW, 6, startTime1.plusMinutes(10), Duration.ofMinutes(5)));
         SubTask subTask9 = taskManager.createSubTask(new SubTask("SubTask #9", "DS", Status.NEW, 6, startTime1.plusMinutes(30), Duration.ofMinutes(7)));
         SubTask subTask10 = taskManager.createSubTask(new SubTask("SubTask #10", "DS", Status.NEW, 6, startTime1.plusMinutes(20), Duration.ofMinutes(6)));
 
@@ -48,16 +48,21 @@ public class Main {
         taskManager.getSubTaskById(7);
         taskManager.getSubTaskById(9);
 
-        TaskManager manager2 = Managers.getDefault();
-        System.out.println();
-        System.out.println(manager2.getHistory());
+        TaskManager taskManager1 = FileBackedTasksManager.loadFromFile(new File("test.scv"));
+        for (Task task : taskManager1.getHistory()) {
+            System.out.println(task);
+        }
+
+//        TaskManager manager2 = Managers.getDefault();
+//        System.out.println();
+//        System.out.println(manager2.getHistory());
     }
 
 
 //       TaskManager taskManager = Managers.getDefaultFileManager();
 //
-//        LocalDateTime startTime = LocalDateTime.of(2023, 05, 8, 01, 00);
-//        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+//        LocalDateTime startTime = LocalDateTime.of(2023, 5, 8, 1, 0);
+//        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
 //        Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
 //        Task task2 = taskManager.createTask(new Task("Task #2", "DT", Status.NEW, startTime1.plusMinutes(50), Duration.ofMinutes(9)));
 //        Task task3 = taskManager.createTask(new Task("Task #3", "DT", Status.NEW, startTime1.plusMinutes(60), Duration.ofMinutes(9)));
@@ -103,7 +108,7 @@ public class Main {
 //        System.out.println(taskManager.getEpicById(5));
 //        System.out.println(taskManager.getEpicById(6));
 //        System.out.println();
-//        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 00);
+//        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 0);
 //        Duration duration = Duration.ofMinutes(5);
 //        SubTask newSubTask = new SubTask(10, "SubTask #4444", "DE", Status.IN_PROGRESS,6, startTime2, duration);
 //        taskManager.updateSubTask(new SubTask(10, "SubTask #4444", "DE", Status.IN_PROGRESS,5, null, null));

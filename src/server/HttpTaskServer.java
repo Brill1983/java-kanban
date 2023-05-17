@@ -21,7 +21,7 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-public class HttpTaskServer implements HttpHandler{
+public class HttpTaskServer implements HttpHandler {
 
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
@@ -34,6 +34,7 @@ public class HttpTaskServer implements HttpHandler{
         this.httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
         httpServer.createContext("/tasks", this::handle);
     }
+
     public HttpTaskServer(TaskManager manager) throws IOException {
         this.taskManager = manager;
         this.httpServer = HttpServer.create(new InetSocketAddress("localhost", PORT), 0);
@@ -69,28 +70,71 @@ public class HttpTaskServer implements HttpHandler{
 
     private void switcher(int choice, HttpExchange exchange, String body, TaskManager fileBackedTasksManager) {
         switch (choice) {
-            case 1: outputAll(exchange, fileBackedTasksManager); break;
-            case 2: outputAllTasks(exchange, fileBackedTasksManager); break;
-            case 3: outputAllEpics(exchange, fileBackedTasksManager); break;
-            case 4: outputAllSubTasks(exchange, fileBackedTasksManager); break;
-            case 5: writeResponse(exchange, "Неверно составлен запрос", 400);
-            case 6: receiveTaskById(exchange, fileBackedTasksManager); break;
-            case 7: receiveEpicById(exchange, fileBackedTasksManager); break;
-            case 8: receiveSubTaskById(exchange, fileBackedTasksManager); break;
-            case 9: createNewTask(body, exchange, fileBackedTasksManager); break;
-            case 10: createNewEpic(body, exchange, fileBackedTasksManager); break;
-            case 11: createNewSubTask(body, exchange, fileBackedTasksManager); break;
-            case 12: changeTask(body, exchange, fileBackedTasksManager); break;
-            case 13: changeEpic(body, exchange, fileBackedTasksManager); break;
-            case 14: changeSubTask(body, exchange, fileBackedTasksManager); break;
-            case 15: removeAll(exchange, fileBackedTasksManager); break;
-            case 16: removeAllTasks(exchange, fileBackedTasksManager); break;
-            case 17: removeAllEpics(exchange, fileBackedTasksManager); break;
-            case 18: removeAllSubTasks(exchange, fileBackedTasksManager); break;
-            case 19: removeTaskById(exchange, fileBackedTasksManager); break;
-            case 20: removeEpicById(exchange, fileBackedTasksManager); break;
-            case 21: removeSubTaskById(exchange, fileBackedTasksManager); break;
-            case 22: receiveHistory(exchange, fileBackedTasksManager); break;
+            case 1:
+                outputAll(exchange, fileBackedTasksManager);
+                break;
+            case 2:
+                outputAllTasks(exchange, fileBackedTasksManager);
+                break;
+            case 3:
+                outputAllEpics(exchange, fileBackedTasksManager);
+                break;
+            case 4:
+                outputAllSubTasks(exchange, fileBackedTasksManager);
+                break;
+            case 5:
+                writeResponse(exchange, "Неверно составлен запрос", 400);
+            case 6:
+                receiveTaskById(exchange, fileBackedTasksManager);
+                break;
+            case 7:
+                receiveEpicById(exchange, fileBackedTasksManager);
+                break;
+            case 8:
+                receiveSubTaskById(exchange, fileBackedTasksManager);
+                break;
+            case 9:
+                createNewTask(body, exchange, fileBackedTasksManager);
+                break;
+            case 10:
+                createNewEpic(body, exchange, fileBackedTasksManager);
+                break;
+            case 11:
+                createNewSubTask(body, exchange, fileBackedTasksManager);
+                break;
+            case 12:
+                changeTask(body, exchange, fileBackedTasksManager);
+                break;
+            case 13:
+                changeEpic(body, exchange, fileBackedTasksManager);
+                break;
+            case 14:
+                changeSubTask(body, exchange, fileBackedTasksManager);
+                break;
+            case 15:
+                removeAll(exchange, fileBackedTasksManager);
+                break;
+            case 16:
+                removeAllTasks(exchange, fileBackedTasksManager);
+                break;
+            case 17:
+                removeAllEpics(exchange, fileBackedTasksManager);
+                break;
+            case 18:
+                removeAllSubTasks(exchange, fileBackedTasksManager);
+                break;
+            case 19:
+                removeTaskById(exchange, fileBackedTasksManager);
+                break;
+            case 20:
+                removeEpicById(exchange, fileBackedTasksManager);
+                break;
+            case 21:
+                removeSubTaskById(exchange, fileBackedTasksManager);
+                break;
+            case 22:
+                receiveHistory(exchange, fileBackedTasksManager);
+                break;
         }
 
     }

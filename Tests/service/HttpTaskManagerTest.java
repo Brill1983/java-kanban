@@ -42,7 +42,7 @@ public class HttpTaskManagerTest extends TaskManagerTest<HttpTaskManager> {
 
     @Test
     void firstLoadToServerThanLoadFromServer() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
         Task task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
         Epic epic2 = taskManager.createEpic(new Epic("Epic #2", "DE"));
         SubTask subTask3 = taskManager.createSubTask(new SubTask("SubTask #3", "DS", Status.NEW, 2, startTime1.plusMinutes(20), Duration.ofMinutes(6)));

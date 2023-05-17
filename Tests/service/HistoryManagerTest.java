@@ -24,11 +24,11 @@ class HistoryManagerTest {
 
     @Test
     void add() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
-        Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.IN_PROGRESS ,2, startTime2, Duration.ofMinutes(9));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1,0 );
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 20);
+        Task task1 = new Task(1, "Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Epic epic2 = new Epic(2, "Epic #2", "DT");
+        SubTask subTask3 = new SubTask(3, "SubTask #3", "DT", Status.IN_PROGRESS, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -41,11 +41,11 @@ class HistoryManagerTest {
 
     @Test
     void addSomeTasksDoubleTime() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", Status.NEW,startTime1, Duration.ofMinutes(9));
-        Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 20);
+        Task task1 = new Task(1, "Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Epic epic2 = new Epic(2, "Epic #2", "DT");
+        SubTask subTask3 = new SubTask(3, "SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -60,11 +60,11 @@ class HistoryManagerTest {
 
     @Test
     void removeFirstElement() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
-        Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 20);
+        Task task1 = new Task(1, "Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Epic epic2 = new Epic(2, "Epic #2", "DT");
+        SubTask subTask3 = new SubTask(3, "SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -77,11 +77,11 @@ class HistoryManagerTest {
 
     @Test
     void removeLastElement() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", Status.NEW,startTime1, Duration.ofMinutes(9));
-        Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW,2, startTime2, Duration.ofMinutes(9));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 20);
+        Task task1 = new Task(1, "Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Epic epic2 = new Epic(2, "Epic #2", "DT");
+        SubTask subTask3 = new SubTask(3, "SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -94,11 +94,11 @@ class HistoryManagerTest {
 
     @Test
     void removeMiddleElement() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
-        Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 20);
+        Task task1 = new Task(1, "Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Epic epic2 = new Epic(2, "Epic #2", "DT");
+        SubTask subTask3 = new SubTask(3, "SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);
@@ -111,11 +111,11 @@ class HistoryManagerTest {
 
     @Test
     void getHistory() {
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 20);
-        Task task1 = new Task(1,"Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
-        Epic epic2 = new Epic(2,"Epic #2", "DT");
-        SubTask subTask3 = new SubTask(3,"SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 20);
+        Task task1 = new Task(1, "Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9));
+        Epic epic2 = new Epic(2, "Epic #2", "DT");
+        SubTask subTask3 = new SubTask(3, "SubTask #3", "DT", Status.NEW, 2, startTime2, Duration.ofMinutes(9));
         historyManager.add(task1);
         historyManager.add(epic2);
         historyManager.add(subTask3);

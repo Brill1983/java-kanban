@@ -39,7 +39,7 @@ class HttpTaskServerTest {
         taskManager = Managers.getDefaultInMemoryManager();
         taskServer = new HttpTaskServer(taskManager);
         taskServer.startServer();
-        LocalDateTime startTime1 = LocalDateTime.of(2023, 05, 8, 01, 00);
+        LocalDateTime startTime1 = LocalDateTime.of(2023, 5, 8, 1, 0);
         task1 = taskManager.createTask(new Task("Task #1", "DT", Status.NEW, startTime1, Duration.ofMinutes(9)));
         epic2 = taskManager.createEpic(new Epic("Epic #2", "DE"));
         subTask3 = taskManager.createSubTask(new SubTask("SubTask #3", "DS", Status.NEW, 2, startTime1.plusMinutes(20), Duration.ofMinutes(6)));
@@ -142,7 +142,7 @@ class HttpTaskServerTest {
 
     @Test
     void shouldChangeSubTaskById() throws IOException, InterruptedException {
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 10);
         SubTask subTask = new SubTask(3, "SubTask #4444", "DE", Status.IN_PROGRESS,2, startTime2, Duration.ofMinutes(5));
         String json = gson.toJson(subTask);
 
@@ -171,7 +171,7 @@ class HttpTaskServerTest {
 
     @Test
     void shouldChangeTaskById() throws IOException, InterruptedException {
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 10);
         Task task = new Task(1, "NewTask #4444", "DE", Status.IN_PROGRESS, startTime2, Duration.ofMinutes(5));
         String json = gson.toJson(task);
 
@@ -186,7 +186,7 @@ class HttpTaskServerTest {
 
     @Test
     void shouldCreateNewSubTask() throws IOException, InterruptedException {
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 10);
         SubTask subTask = new SubTask("NEW #4444", "DE", Status.NEW,2, startTime2, Duration.ofMinutes(5));
         String json = gson.toJson(subTask);
 
@@ -207,7 +207,7 @@ class HttpTaskServerTest {
 
     @Test
     void shouldCreateNewEpic() throws IOException, InterruptedException {
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 10);
         Epic epic = new Epic("NEW #4444", "DE");
         String json = gson.toJson(epic);
 
@@ -228,7 +228,7 @@ class HttpTaskServerTest {
 
     @Test
     void shouldCreateNewTask() throws IOException, InterruptedException {
-        LocalDateTime startTime2 = LocalDateTime.of(2023, 05, 8, 01, 10);
+        LocalDateTime startTime2 = LocalDateTime.of(2023, 5, 8, 1, 10);
         Task task = new Task("NEW #4444", "DE", Status.NEW, startTime2, Duration.ofMinutes(5));
         String json = gson.toJson(task);
 

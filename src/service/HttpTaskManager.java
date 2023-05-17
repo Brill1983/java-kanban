@@ -37,6 +37,7 @@ public class HttpTaskManager extends FileBackedTasksManager {
         client.put("history", historyJson);
     }
 
+    @Override
     public void load() {
         String responseTasks = client.load("tasks");
         String responseEpic = client.load("epics");
@@ -46,30 +47,33 @@ public class HttpTaskManager extends FileBackedTasksManager {
         int maxEpicsKey = 0;
         int maxSubTasksKey = 0;
         if (!responseTasks.isEmpty()) {
-            Type taskType = new TypeToken<HashMap<Integer, Task>>(){}.getType();
+            Type taskType = new TypeToken<HashMap<Integer, Task>>() {
+            }.getType();
             tasks = gson.fromJson(responseTasks, taskType);
             if (!tasks.isEmpty()) {
                 maxTasksKey = Collections.max(tasks.keySet());
             }
         }
         if (!responseEpic.isEmpty()) {
-            Type epicType = new TypeToken<HashMap<Integer, Epic>>(){}.getType();
+            Type epicType = new TypeToken<HashMap<Integer, Epic>>() {
+            }.getType();
             epics = gson.fromJson(responseEpic, epicType);
             if (!epics.isEmpty()) {
                 maxEpicsKey = Collections.max(epics.keySet());
             }
         }
         if (!responseSubTasks.isEmpty()) {
-            Type subTaskType = new TypeToken<HashMap<Integer, SubTask>>(){}.getType();
+            Type subTaskType = new TypeToken<HashMap<Integer, SubTask>>() {
+            }.getType();
             subTasks = gson.fromJson(responseSubTasks, subTaskType);
-            if (!subTasks.isEmpty()){
+            if (!subTasks.isEmpty()) {
                 maxSubTasksKey = Collections.max(subTasks.keySet());
             }
         }
-        int max = Math.max(Math.max(maxTasksKey, maxEpicsKey), maxSubTasksKey);
-        seq = max;
+        seq = Math.max(Math.max(maxTasksKey, maxEpicsKey), maxSubTasksKey);
 
-        Type historyType = new TypeToken<ArrayList<Integer>>(){}.getType();
+        Type historyType = new TypeToken<ArrayList<Integer>>() {
+        }.getType();
         List<Integer> historyList = gson.fromJson(responseHistory, historyType);
         if (historyList != null) {
             for (Integer id : historyList) { // создаем, а не скачиваем (см вебинар)
