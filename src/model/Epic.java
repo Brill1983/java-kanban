@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Objects;
 
 public class Epic extends Task {
-//    private List<SubTask> subTasks = new ArrayList<>();
+
     private List<Integer> subTasks = new ArrayList<>();
 
     private LocalDateTime endTime;

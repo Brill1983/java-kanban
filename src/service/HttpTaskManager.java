@@ -17,7 +17,8 @@ public class HttpTaskManager extends FileBackedTasksManager {
 
     private final KVTaskClient client;
 
-    private final Gson gson = new Gson();
+//    private final Gson gson = new Gson();
+    private final Gson gson = Managers.getGson();
 
     public HttpTaskManager(String url) {
         super(Managers.getDefaultHistory());

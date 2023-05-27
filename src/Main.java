@@ -1,3 +1,4 @@
+import com.google.gson.Gson;
 import model.Epic;
 import model.Status;
 import model.SubTask;
@@ -52,6 +53,13 @@ public class Main {
         for (Task task : taskManager1.getHistory()) {
             System.out.println(task);
         }
+
+        Gson gson = Managers.getGson();
+        String gsonTask = gson.toJson(task1);
+        System.out.println(gsonTask);
+        System.out.println();
+        Task taskFromGson = gson.fromJson(gsonTask, Task.class);
+        System.out.println();
 
 //        TaskManager manager2 = Managers.getDefault();
 //        System.out.println();

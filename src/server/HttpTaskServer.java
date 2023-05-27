@@ -25,7 +25,8 @@ public class HttpTaskServer implements HttpHandler {
 
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    private static final Gson gson = new Gson();
+//    private static final Gson gson = new Gson();
+    private static final Gson gson = Managers.getGson();
     private final TaskManager taskManager;
     private final HttpServer httpServer;
 
@@ -68,72 +69,72 @@ public class HttpTaskServer implements HttpHandler {
         }
     }
 
-    private void switcher(int choice, HttpExchange exchange, String body, TaskManager fileBackedTasksManager) {
+    private void switcher(int choice, HttpExchange exchange, String body, TaskManager taskManager) {
         switch (choice) {
             case 1:
-                outputAll(exchange, fileBackedTasksManager);
+                outputAll(exchange, taskManager);
                 break;
             case 2:
-                outputAllTasks(exchange, fileBackedTasksManager);
+                outputAllTasks(exchange, taskManager);
                 break;
             case 3:
-                outputAllEpics(exchange, fileBackedTasksManager);
+                outputAllEpics(exchange, taskManager);
                 break;
             case 4:
-                outputAllSubTasks(exchange, fileBackedTasksManager);
+                outputAllSubTasks(exchange, taskManager);
                 break;
             case 5:
                 writeResponse(exchange, "Неверно составлен запрос", 400);
             case 6:
-                receiveTaskById(exchange, fileBackedTasksManager);
+                receiveTaskById(exchange, taskManager);
                 break;
             case 7:
-                receiveEpicById(exchange, fileBackedTasksManager);
+                receiveEpicById(exchange, taskManager);
                 break;
             case 8:
-                receiveSubTaskById(exchange, fileBackedTasksManager);
+                receiveSubTaskById(exchange, taskManager);
                 break;
             case 9:
-                createNewTask(body, exchange, fileBackedTasksManager);
+                createNewTask(body, exchange, taskManager);
                 break;
             case 10:
-                createNewEpic(body, exchange, fileBackedTasksManager);
+                createNewEpic(body, exchange, taskManager);
                 break;
             case 11:
-                createNewSubTask(body, exchange, fileBackedTasksManager);
+                createNewSubTask(body, exchange, taskManager);
                 break;
             case 12:
-                changeTask(body, exchange, fileBackedTasksManager);
+                changeTask(body, exchange, taskManager);
                 break;
             case 13:
-                changeEpic(body, exchange, fileBackedTasksManager);
+                changeEpic(body, exchange, taskManager);
                 break;
             case 14:
-                changeSubTask(body, exchange, fileBackedTasksManager);
+                changeSubTask(body, exchange, taskManager);
                 break;
             case 15:
-                removeAll(exchange, fileBackedTasksManager);
+                removeAll(exchange, taskManager);
                 break;
             case 16:
-                removeAllTasks(exchange, fileBackedTasksManager);
+                removeAllTasks(exchange, taskManager);
                 break;
             case 17:
-                removeAllEpics(exchange, fileBackedTasksManager);
+                removeAllEpics(exchange, taskManager);
                 break;
             case 18:
-                removeAllSubTasks(exchange, fileBackedTasksManager);
+                removeAllSubTasks(exchange, taskManager);
                 break;
             case 19:
-                removeTaskById(exchange, fileBackedTasksManager);
+                removeTaskById(exchange, taskManager);
                 break;
             case 20:
-                removeEpicById(exchange, fileBackedTasksManager);
+                removeEpicById(exchange, taskManager);
                 break;
             case 21:
-                removeSubTaskById(exchange, fileBackedTasksManager);
+                removeSubTaskById(exchange, taskManager);
                 break;
             case 22:
-                receiveHistory(exchange, fileBackedTasksManager);
+                receiveHistory(exchange, taskManager);
                 break;
         }
 
@@ -209,91 +210,91 @@ public class HttpTaskServer implements HttpHandler {
         return 5; // обшибка - неправильный запрос
     }
 
-    private void receiveHistory(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        String stringJson = gson.toJson(fileBackedTasksManager.getHistory());
+    private void receiveHistory(HttpExchange exchange, TaskManager tasksManager) {
+        String stringJson = gson.toJson(tasksManager.getHistory());
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void removeSubTaskById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void removeSubTaskById(HttpExchange exchange, TaskManager tasksManager) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParts = query.split("=");
         int id = Integer.parseInt(queryParts[1]);
-        fileBackedTasksManager.deleteSubTaskById(id);
+        tasksManager.deleteSubTaskById(id);
         writeResponse(exchange, "Сабтаск с ID " + id + "удалена", 200);
     }
 
-    private void removeEpicById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void removeEpicById(HttpExchange exchange, TaskManager tasksManager) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParts = query.split("=");
         int id = Integer.parseInt(queryParts[1]);
-        fileBackedTasksManager.deleteEpicById(id);
+        tasksManager.deleteEpicById(id);
         writeResponse(exchange, "Эпик с ID " + id + "удалена", 200);
     }
 
-    private void removeTaskById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void removeTaskById(HttpExchange exchange, TaskManager tasksManager) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParts = query.split("=");
         int id = Integer.parseInt(queryParts[1]);
-        fileBackedTasksManager.deleteTaskById(id);
+        tasksManager.deleteTaskById(id);
         writeResponse(exchange, "Задача с ID " + id + "удалена", 200);
     }
 
-    private void removeAllSubTasks(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        fileBackedTasksManager.deleteAllSubTasks();
+    private void removeAllSubTasks(HttpExchange exchange, TaskManager tasksManager) {
+        tasksManager.deleteAllSubTasks();
         writeResponse(exchange, "Все подзадачи удалены", 200);
     }
 
-    private void removeAllEpics(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        fileBackedTasksManager.deleteAllEpics();
+    private void removeAllEpics(HttpExchange exchange, TaskManager tasksManager) {
+        tasksManager.deleteAllEpics();
         writeResponse(exchange, "Все эпики удалены", 200);
     }
 
-    private void removeAllTasks(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        fileBackedTasksManager.deleteAllTasks();
+    private void removeAllTasks(HttpExchange exchange, TaskManager tasksManager) {
+        tasksManager.deleteAllTasks();
         writeResponse(exchange, "Все задачи удалены", 200);
     }
 
-    private void removeAll(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        fileBackedTasksManager.deleteAllTasks();
-        fileBackedTasksManager.deleteAllSubTasks();
-        fileBackedTasksManager.deleteAllEpics();
+    private void removeAll(HttpExchange exchange, TaskManager tasksManager) {
+        tasksManager.deleteAllTasks();
+        tasksManager.deleteAllSubTasks();
+        tasksManager.deleteAllEpics();
         writeResponse(exchange, "Все задачи, эпики и подзадачи удалены", 200);
     }
 
-    private void changeSubTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void changeSubTask(String body, HttpExchange exchange, TaskManager tasksManager) {
         try {
             SubTask subtask = gson.fromJson(body, SubTask.class);
-            fileBackedTasksManager.updateSubTask(subtask);
+            tasksManager.updateSubTask(subtask);
             writeResponse(exchange, "Подзадача изменена", 200);
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, "Получен некорреткный JSON", 400);
         }
     }
 
-    private void changeEpic(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void changeEpic(String body, HttpExchange exchange, TaskManager tasksManager) {
         try {
             Epic epic = gson.fromJson(body, Epic.class);
-            fileBackedTasksManager.updateEpic(epic);
+            tasksManager.updateEpic(epic);
             writeResponse(exchange, "Эпик изменен", 200);
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, "Получен некорреткный JSON", 400);
         }
     }
 
-    private void changeTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void changeTask(String body, HttpExchange exchange, TaskManager tasksManager) {
         try {
             Task task = gson.fromJson(body, Task.class);
-            fileBackedTasksManager.updateTask(task);
+            tasksManager.updateTask(task);
             writeResponse(exchange, "Задача изменена", 200);
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, "Получен некорреткный JSON", 400);
         }
     }
 
-    private void createNewSubTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void createNewSubTask(String body, HttpExchange exchange, TaskManager tasksManager) {
         try {
             SubTask subtask = gson.fromJson(body, SubTask.class);
-            SubTask newSubTask = fileBackedTasksManager.createSubTask(subtask);
+            SubTask newSubTask = tasksManager.createSubTask(subtask);
             String epicJson = gson.toJson(newSubTask);
             writeResponse(exchange, epicJson, 201); // Что возвращать? Отклик или задачу из мапы?
         } catch (JsonSyntaxException e) {
@@ -301,10 +302,10 @@ public class HttpTaskServer implements HttpHandler {
         }
     }
 
-    private void createNewEpic(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void createNewEpic(String body, HttpExchange exchange, TaskManager tasksManager) {
         try {
             Epic epic = gson.fromJson(body, Epic.class);
-            Epic newEpic = fileBackedTasksManager.createEpic(epic);
+            Epic newEpic = tasksManager.createEpic(epic);
             String epicJson = gson.toJson(newEpic);
             writeResponse(exchange, epicJson, 201); // Что возвращать? Отклик или задачу из мапы?
         } catch (JsonSyntaxException e) {
@@ -312,10 +313,10 @@ public class HttpTaskServer implements HttpHandler {
         }
     }
 
-    private void createNewTask(String body, HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void createNewTask(String body, HttpExchange exchange, TaskManager tasksManager) {
         try {
             Task task = gson.fromJson(body, Task.class);
-            Task newTask = fileBackedTasksManager.createTask(task);
+            Task newTask = tasksManager.createTask(task);
             String taskJson = gson.toJson(newTask);
             writeResponse(exchange, taskJson, 201); // Что возвращать? Отклик или задачу из мапы?
         } catch (JsonSyntaxException e) {
@@ -323,46 +324,46 @@ public class HttpTaskServer implements HttpHandler {
         }
     }
 
-    private void receiveSubTaskById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void receiveSubTaskById(HttpExchange exchange, TaskManager tasksManager) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParts = query.split("=");
-        String stringJson = gson.toJson(fileBackedTasksManager.getSubTaskById(Integer.parseInt(queryParts[1])));
+        String stringJson = gson.toJson(tasksManager.getSubTaskById(Integer.parseInt(queryParts[1])));
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void receiveEpicById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void receiveEpicById(HttpExchange exchange, TaskManager tasksManager) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParts = query.split("=");
-        String stringJson = gson.toJson(fileBackedTasksManager.getEpicById(Integer.parseInt(queryParts[1])));
+        String stringJson = gson.toJson(tasksManager.getEpicById(Integer.parseInt(queryParts[1])));
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void receiveTaskById(HttpExchange exchange, TaskManager fileBackedTasksManager) {
+    private void receiveTaskById(HttpExchange exchange, TaskManager tasksManager) {
         String query = exchange.getRequestURI().getQuery();
         String[] queryParts = query.split("=");
-        String stringJson = gson.toJson(fileBackedTasksManager.getTaskById(Integer.parseInt(queryParts[1])));
+        String stringJson = gson.toJson(tasksManager.getTaskById(Integer.parseInt(queryParts[1])));
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void outputAllSubTasks(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        String stringJson = gson.toJson(fileBackedTasksManager.getAllSubTasks());
+    private void outputAllSubTasks(HttpExchange exchange, TaskManager tasksManager) {
+        String stringJson = gson.toJson(tasksManager.getAllSubTasks());
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void outputAllEpics(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        String stringJson = gson.toJson(fileBackedTasksManager.getAllEpics());
+    private void outputAllEpics(HttpExchange exchange, TaskManager tasksManager) {
+        String stringJson = gson.toJson(tasksManager.getAllEpics());
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void outputAllTasks(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        String stringJson = gson.toJson(fileBackedTasksManager.getAllTasks());
+    private void outputAllTasks(HttpExchange exchange, TaskManager tasksManager) {
+        String stringJson = gson.toJson(tasksManager.getAllTasks());
         writeResponse(exchange, stringJson, 200);
     }
 
-    private void outputAll(HttpExchange exchange, TaskManager fileBackedTasksManager) {
-        List<Task> list = new ArrayList<>(fileBackedTasksManager.getAllTasks());
-        list.addAll(fileBackedTasksManager.getAllEpics());
-        list.addAll(fileBackedTasksManager.getAllSubTasks());
+    private void outputAll(HttpExchange exchange, TaskManager tasksManager) {
+        List<Task> list = new ArrayList<>(tasksManager.getAllTasks());
+        list.addAll(tasksManager.getAllEpics());
+        list.addAll(tasksManager.getAllSubTasks());
         String listJson = gson.toJson(list);
         writeResponse(exchange, listJson, 200);
     }

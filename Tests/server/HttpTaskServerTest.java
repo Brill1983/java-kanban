@@ -28,7 +28,10 @@ class HttpTaskServerTest {
 
     TaskManager taskManager;
     HttpTaskServer taskServer;
-    Gson gson = new Gson();
+//    Gson gson = new Gson();
+
+    Gson gson = Managers.getGson();
+
     Task task1;
     Epic epic2;
     SubTask subTask3;

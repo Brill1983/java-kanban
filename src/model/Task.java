@@ -1,5 +1,7 @@
 package model;
 
+import user.User;
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Objects;
@@ -12,6 +14,7 @@ public class Task {
     private Status status;
     private Duration duration;
     private LocalDateTime startTime;
+    protected User user;
 
     public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.name = name;
@@ -42,6 +45,39 @@ public class Task {
         this.description = description;
     }
 
+    public Task(String name, String description, Status status, LocalDateTime startTime, Duration duration, User user) {
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.user = user;
+    }
+
+    public Task(String name, String description, User user) {
+        this.name = name;
+        this.description = description;
+        this.status = Status.NEW;
+        this.user = user;
+    }
+
+    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration, User user) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startTime = startTime;
+        this.duration = duration;
+        this.user = user;
+    }
+
+    public Task(int id, String name, String description, User user) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.user = user;
+    }
+
     public LocalDateTime getEndTime() {
         if (startTime == null) {
             return null;
@@ -66,6 +102,14 @@ public class Task {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public User getUser() {
+        return user;
+    }
+
+    public void setUser(User user) {
+        this.user = user;
     }
 
     public Status getStatus() {
