@@ -17,7 +17,6 @@ import java.io.OutputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,7 +24,6 @@ public class HttpTaskServer implements HttpHandler {
 
     private static final int PORT = 8080;
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-//    private static final Gson gson = new Gson();
     private static final Gson gson = Managers.getGson();
     private final TaskManager taskManager;
     private final HttpServer httpServer;
@@ -296,7 +294,7 @@ public class HttpTaskServer implements HttpHandler {
             SubTask subtask = gson.fromJson(body, SubTask.class);
             SubTask newSubTask = tasksManager.createSubTask(subtask);
             String epicJson = gson.toJson(newSubTask);
-            writeResponse(exchange, epicJson, 201); // Что возвращать? Отклик или задачу из мапы?
+            writeResponse(exchange, epicJson, 201);
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, "Получен некорреткный JSON", 400);
         }
@@ -307,7 +305,7 @@ public class HttpTaskServer implements HttpHandler {
             Epic epic = gson.fromJson(body, Epic.class);
             Epic newEpic = tasksManager.createEpic(epic);
             String epicJson = gson.toJson(newEpic);
-            writeResponse(exchange, epicJson, 201); // Что возвращать? Отклик или задачу из мапы?
+            writeResponse(exchange, epicJson, 201);
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, "Получен некорреткный JSON", 400);
         }
@@ -318,7 +316,7 @@ public class HttpTaskServer implements HttpHandler {
             Task task = gson.fromJson(body, Task.class);
             Task newTask = tasksManager.createTask(task);
             String taskJson = gson.toJson(newTask);
-            writeResponse(exchange, taskJson, 201); // Что возвращать? Отклик или задачу из мапы?
+            writeResponse(exchange, taskJson, 201);
         } catch (JsonSyntaxException e) {
             writeResponse(exchange, "Получен некорреткный JSON", 400);
         }

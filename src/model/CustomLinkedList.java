@@ -9,7 +9,7 @@ public class CustomLinkedList {
 
     private Node head;
     private Node tail;
-    private Map<Integer, Node> history = new HashMap<>();
+    private final Map<Integer, Node> history = new HashMap<>();
 
     public void linkLast(Task task) {
         Node oldTail = tail;
